@@ -22,15 +22,15 @@ public class MultiplicationService {
         List<Constante> nombres=new ArrayList<>();
 
         for(int i=0;i<nombre.length();i++){
-            char c=nombre.charAt(i);
+            char c=nombre.charAt(nombre.length()-i-1);
 
             int n=c-'0';
-            List<Multiplication> liste=new ArrayList<>();
+            List<Operation> liste=new ArrayList<>();
 
             for(int j=0;j<=i;j++){
                 var x="x"+j;
                 var y="y"+(i-j);
-                liste.add(new Multiplication(new Variable(x),new Variable(y)));
+                liste.add(new Multiplication(new Variable(x,j),new Variable(y,i-j)));
             }
 
             var add=new Addition(liste,i,n);
@@ -40,7 +40,41 @@ public class MultiplicationService {
         }
 
         return new Equation(additions,nombre,nombres);
+    }
 
+    public void resolution(Equation equation){
+
+
+        List<List<Integer>> listeValeursPossibles=new ArrayList<>();
+        for(var i=0;i<10;i++){
+            for(int j=0;j<10;j++){
+                List<Integer> liste=new ArrayList<>();
+                liste.add(i);
+                liste.add(j);
+                listeValeursPossibles.add(liste);
+            }
+        }
+
+        for(var i=0;i<equation.getAdditions().size();i++){
+            var ordre=i;
+
+            var add=equation.getEquationSimplifiee(ordre);
+            LOGGER.info("ordre {} : {}", ordre,add);
+
+
+        }
+
+    }
+
+    private void resolution2(Equation equation, int ordre, int max, List<List<Integer>> listeValeursPossibles){
+
+        var eq=equation.getEquationSimplifiee(ordre);
+
+
+
+        for(var l : listeValeursPossibles){
+
+        }
     }
 
 }

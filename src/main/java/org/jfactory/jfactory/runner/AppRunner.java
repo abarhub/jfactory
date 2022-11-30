@@ -26,5 +26,8 @@ public class AppRunner implements ApplicationRunner {
         var eq = multiplicationService.generationEquation(n);
 
         LOGGER.info("eq={}", eq);
+
+        multiplicationService.resolution(eq);
+
     }
 }

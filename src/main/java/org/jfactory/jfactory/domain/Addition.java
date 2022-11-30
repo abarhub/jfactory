@@ -2,19 +2,20 @@ package org.jfactory.jfactory.domain;
 
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class Addition {
-    private final List<Multiplication> addition;
+    private final List<Operation> addition;
     private final int ordre;
     private final int valeur;
 
-    public Addition(List<Multiplication> addition, int ordre, int valeur) {
+    public Addition(List<Operation> addition, int ordre, int valeur) {
         this.addition = List.copyOf(addition);
         this.ordre = ordre;
         this.valeur = valeur;
     }
 
-    public List<Multiplication> getAddition() {
+    public List<Operation> getAddition() {
         return addition;
     }
 
@@ -28,10 +29,8 @@ public class Addition {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Addition.class.getSimpleName() + "[", "]")
-                .add("addition=" + addition)
-                .add("ordre=" + ordre)
-                .add("valeur=" + valeur)
-                .toString();
+        return addition.stream().map(Operation::toString)
+                .collect(Collectors.joining("+")) +
+                "=" + valeur + "(" + ordre + ")";
     }
 }

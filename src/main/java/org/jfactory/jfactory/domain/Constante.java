@@ -3,7 +3,7 @@ package org.jfactory.jfactory.domain;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class Constante {
+public class Constante implements Operation {
 
     private final int valeur;
 

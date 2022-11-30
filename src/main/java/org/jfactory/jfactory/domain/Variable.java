@@ -8,8 +8,11 @@ public class Variable {
     private boolean affecte;
     private int valeur;
 
-    public Variable(String nom) {
+    private final int no;
+
+    public Variable(String nom, int no) {
         this.nom = nom;
+        this.no=no;
         affecte=false;
         valeur=-1;
     }
@@ -32,6 +35,10 @@ public class Variable {
 
     public void setValeur(int valeur) {
         this.valeur = valeur;
+    }
+
+    public int getNo() {
+        return no;
     }
 
     @Override
