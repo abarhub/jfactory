@@ -8,6 +8,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @Service
 public class AppRunner implements ApplicationRunner {
 
@@ -21,13 +24,21 @@ public class AppRunner implements ApplicationRunner {
         LOGGER.info("Run ...");
 
         String n;
-        n = "15";
+//        n = "15"; // 3*5
+//        n = "115"; // 5*23
+        n = "28741"; // 41*701
+//        n = "99400891"; // 5*23
+
 
         var eq = multiplicationService.generationEquation(n);
 
         LOGGER.info("eq={}", eq);
 
+        Instant debut=Instant.now();
+
         multiplicationService.resolution(eq);
 
+        Duration duree=Duration.between(debut,Instant.now());
+        LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
     }
 }

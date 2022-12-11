@@ -1,9 +1,16 @@
 package org.jfactory.jfactory.domain;
 
+import org.jfactory.jfactory.service.MultiplicationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Variable {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(Variable.class);
+
     private final String nom;
     private boolean affecte;
     private int valeur;
@@ -11,10 +18,19 @@ public class Variable {
     private final int no;
 
     public Variable(String nom, int no) {
+//        LOGGER.info("creation var {}/{}",nom,no,new Exception());
         this.nom = nom;
         this.no=no;
         affecte=false;
         valeur=-1;
+    }
+
+    public Variable(Variable v) {
+//        LOGGER.info("copie var {}/{}",v.getNom(),v.getNo(),new Exception());
+        this.nom = v.getNom();
+        this.no=v.getNo();
+        affecte=v.isAffecte();
+        valeur=v.getValeur();
     }
 
     public String getNom() {

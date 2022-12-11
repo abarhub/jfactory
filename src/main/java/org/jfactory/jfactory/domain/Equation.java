@@ -1,5 +1,7 @@
 package org.jfactory.jfactory.domain;
 
+import org.springframework.util.Assert;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,13 @@ public class Equation {
 
     private List<Variable> getListVariables(List<Addition> additions) {
         List<Variable> liste=new ArrayList<>();
+        for(var add:additions){
+            for(var v:add.getToutesVariables()){
+                if(!liste.contains(v)){
+                    liste.add(v);
+                }
+            }
+        }
         return List.copyOf(liste);
     }
 
@@ -43,6 +52,8 @@ public class Equation {
                 }
             } else if(op instanceof Constante cst){
                 n+=cst.getValeur();
+            } else {
+                Assert.state(false,"operation non gere: "+op);
             }
         }
         if(n!=0){
@@ -68,6 +79,8 @@ public class Equation {
                     }
                 } else if(m instanceof Constante cst){
                     res=res.add(BigInteger.valueOf(cst.getValeur()));
+                } else {
+                    Assert.state(false,"operation non gere: "+m);
                 }
             }
         }
@@ -111,5 +124,22 @@ public class Equation {
 
     public List<Constante> getValeurs() {
         return valeurs;
+    }
+
+    public int getMax(){
+        return valeurs.size();
+    }
+
+    public Resultat getResolution() {
+        List<Variable> liste=new ArrayList<>();
+        for(var add:additions){
+            for(var v:add.getToutesVariables()){
+                if(!liste.contains(v)){
+                    var v2=new Variable(v);
+                    liste.add(v2);
+                }
+            }
+        }
+        return new Resultat(List.copyOf(liste),valeurs,valeurBi);
     }
 }
