@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.service;
 
+import com.google.common.collect.ImmutableList;
 import org.jfactory.jfactory.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ public class MultiplicationService {
 
     private static Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
 
+    private Map<Integer,List<List<Integer>>> map=new HashMap<>();
+
     public Equation generationEquation(String nombre) {
 
         Assert.notNull(nombre, "Le parametre nombre ne doit pas être null " + nombre);
@@ -30,13 +33,18 @@ public class MultiplicationService {
             int n = c - '0';
             List<Operation> liste = new ArrayList<>();
 
+            var maxY = (int) Math.ceil(nombre.length() / 2);
+
             for (int j = 0; j <= i; j++) {
-                var x = "x" + j;
-                var y = "y" + (i - j);
-                Variable v1, v2;
-                v1 = getVar(map, x, j);
-                v2 = getVar(map, y, i - j);
-                liste.add(new Multiplication(v1, v2));
+                var j2 = (i - j);
+                if (j2 <= maxY) {
+                    var x = "x" + j;
+                    var y = "y" + j2;
+                    Variable v1, v2;
+                    v1 = getVar(map, x, j);
+                    v2 = getVar(map, y, j2);
+                    liste.add(new Multiplication(v1, v2));
+                }
             }
 
             var add = new Addition(liste, i, n);
@@ -60,11 +68,10 @@ public class MultiplicationService {
     }
 
     public void resolution(Equation equation) {
-        List<List<Integer>> listeValeursPossibles=getListeValeurPossibles();
-        resolution(equation, 0, listeValeursPossibles);
+        resolution(equation, 0);
     }
 
-    private List<Resultat> resolution(Equation equation, int ordre,List<List<Integer>> listeValeursPossibles) {
+    private List<Resultat> resolution(Equation equation, int ordre) {
 
         List<Resultat> listeResultat = new ArrayList<>();
 
@@ -75,6 +82,8 @@ public class MultiplicationService {
 
         Assert.notNull(listeVariables, "listeVariables est null (ordre=" + ordre + ")");
 
+
+        List<List<Integer>> listeValeursPossibles = getListeValeurPossibles(listeVariables.size());
 
         for (var tmp : listeValeursPossibles) {
 
@@ -92,7 +101,7 @@ public class MultiplicationService {
 
             if (equation.estValide(ordre, ordre + 1 >= equation.getMax())) {
                 if (ordre + 1 < equation.getMax()) {
-                    var res = resolution(equation, ordre + 1, listeValeursPossibles);
+                    var res = resolution(equation, ordre + 1);
                     listeResultat.addAll(res);
                 } else {
                     var res = equation.getResolution();
@@ -103,7 +112,7 @@ public class MultiplicationService {
 
             }
 
-            for (var i = 0; i < listeValeursPossibles.size() && i < listeVariables.size(); i++) {
+            for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
                 listeVariables.get(i).setAffecte(false);
                 listeVariables.get(i).setValeur(-1);
             }
@@ -114,18 +123,36 @@ public class MultiplicationService {
         return listeResultat;
     }
 
-    private List<List<Integer>> getListeValeurPossibles(){
+    private List<List<Integer>> getListeValeurPossibles(int nbVariables) {
 
-        List<List<Integer>> listeValeursPossibles = new ArrayList<>();
-        for (var i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                List<Integer> liste = new ArrayList<>();
-                liste.add(i);
-                liste.add(j);
-                listeValeursPossibles.add(liste);
+        Assert.state(nbVariables==1||nbVariables==2,"Nombre de variable invalide");
+
+        if(map.containsKey(nbVariables)){
+            return map.get(nbVariables);
+        } else if(nbVariables==2){
+            List<List<Integer>> listeValeursPossibles = new ArrayList<>();
+            for (var i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    List<Integer> liste = new ArrayList<>();
+                    liste.add(i);
+                    liste.add(j);
+                    listeValeursPossibles.add(ImmutableList.copyOf(liste));
+                }
             }
+            map.put(nbVariables,ImmutableList.copyOf(listeValeursPossibles));
+            return map.get(nbVariables);
+        } else if(nbVariables==1){
+            List<List<Integer>> listeValeursPossibles = new ArrayList<>();
+            for (var i = 0; i < 10; i++) {
+                listeValeursPossibles.add(ImmutableList.of(i));
+            }
+            map.put(nbVariables,ImmutableList.copyOf(listeValeursPossibles));
+            return map.get(nbVariables);
+        } else {
+            Assert.state(false,"nombre de variable invalide");
         }
-        return listeValeursPossibles;
+
+        return null;
     }
 
 }
