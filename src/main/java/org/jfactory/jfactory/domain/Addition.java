@@ -4,7 +4,6 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class Addition {
@@ -22,8 +21,8 @@ public class Addition {
         return addition;
     }
 
-    public void addOperation(Operation operation){
-        List<Operation> liste=new ArrayList<>(addition);
+    public void addOperation(Operation operation) {
+        List<Operation> liste = new ArrayList<>(addition);
         liste.add(operation);
         this.addition = List.copyOf(liste);
     }
@@ -43,18 +42,18 @@ public class Addition {
                 "=" + valeur + "(" + ordre + ")";
     }
 
-    public List<Variable> getToutesVariables(){
+    public List<Variable> getToutesVariables() {
         return getVariables(false);
     }
 
-    public List<Variable> getVariablesNonAffectees(){
+    public List<Variable> getVariablesNonAffectees() {
         return getVariables(true);
     }
 
-    private List<Variable> getVariables(boolean nonAffecte){
-        var liste=new ArrayList<Variable>();
-        for(var elt:addition){
-            if(elt instanceof Multiplication mult) {
+    private List<Variable> getVariables(boolean nonAffecte) {
+        var liste = new ArrayList<Variable>();
+        for (var elt : addition) {
+            if (elt instanceof Multiplication mult) {
                 var v = mult.getV1();
                 if (!v.isAffecte() || !nonAffecte) {
                     if (!liste.contains(v)) {
@@ -70,7 +69,7 @@ public class Addition {
             } else if (elt instanceof Constante) {
                 // rien a faire
             } else {
-                Assert.state(false,"Operation non geree : "+elt);
+                Assert.state(false, "Operation non geree : " + elt);
             }
         }
         return liste;

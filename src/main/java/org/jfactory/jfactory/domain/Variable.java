@@ -18,19 +18,17 @@ public class Variable {
     private final int no;
 
     public Variable(String nom, int no) {
-//        LOGGER.info("creation var {}/{}",nom,no,new Exception());
         this.nom = nom;
-        this.no=no;
-        affecte=false;
-        valeur=-1;
+        this.no = no;
+        affecte = false;
+        valeur = -1;
     }
 
     public Variable(Variable v) {
-//        LOGGER.info("copie var {}/{}",v.getNom(),v.getNo(),new Exception());
         this.nom = v.getNom();
-        this.no=v.getNo();
-        affecte=v.isAffecte();
-        valeur=v.getValeur();
+        this.no = v.getNo();
+        affecte = v.isAffecte();
+        valeur = v.getValeur();
     }
 
     public String getNom() {
@@ -72,8 +70,8 @@ public class Variable {
 
     @Override
     public String toString() {
-        if(affecte){
-            return ""+valeur;
+        if (affecte) {
+            return "" + valeur;
         } else {
             return nom;
         }

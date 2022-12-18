@@ -1,7 +1,6 @@
 package org.jfactory.jfactory.domain;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -23,9 +22,9 @@ public class Resultat {
 
     @Override
     public String toString() {
-        StringBuilder str=new StringBuilder();
-        for(var tmp:listeVariables){
-            if(!str.isEmpty()){
+        StringBuilder str = new StringBuilder();
+        for (var tmp : listeVariables) {
+            if (!str.isEmpty()) {
                 str.append(',');
             }
             str.append(tmp.getNom()).append('=').append(tmp.getValeur());
@@ -33,24 +32,24 @@ public class Resultat {
         return new StringJoiner(", ", Resultat.class.getSimpleName() + "[", "]")
                 .add("listeVariables:" + str)
                 .add("valeurs:" + valeurs)
-                .add("valeurBi:" + valeurBi+"="+getX()+"*"+getY())
+                .add("valeurBi:" + valeurBi + "=" + getX() + "*" + getY())
                 .toString();
     }
 
-    public BigInteger getX(){
+    public BigInteger getX() {
         return getVal("x");
     }
 
-    public BigInteger getY(){
+    public BigInteger getY() {
         return getVal("y");
     }
 
-    private BigInteger getVal(String nom){
-        Assert.notNull(nom,"Nom ne doit pas être null");
-        BigInteger res=BigInteger.ZERO;
-        for(var x:listeVariables){
-            if(x.getNom().startsWith(nom)){
-                res=res.add(BigInteger.valueOf(x.getValeur()).multiply(BigInteger.TEN.pow(x.getNo())));
+    private BigInteger getVal(String nom) {
+        Assert.notNull(nom, "Nom ne doit pas être null");
+        BigInteger res = BigInteger.ZERO;
+        for (var x : listeVariables) {
+            if (x.getNom().startsWith(nom)) {
+                res = res.add(BigInteger.valueOf(x.getValeur()).multiply(BigInteger.TEN.pow(x.getNo())));
             }
         }
         return res;

@@ -1,7 +1,5 @@
 package org.jfactory.jfactory.domain;
 
-import java.util.StringJoiner;
-
 public class Multiplication implements Operation {
 
     private final Variable v1;
@@ -14,7 +12,7 @@ public class Multiplication implements Operation {
 
     @Override
     public String toString() {
-        return v1+"*"+v2;
+        return v1 + "*" + v2;
     }
 
     public Variable getV1() {

@@ -17,7 +17,7 @@ public class MultiplicationService {
 
     private static Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
 
-    private Map<Integer,List<List<Integer>>> map=new HashMap<>();
+    private Map<Integer, List<List<Integer>>> map = new HashMap<>();
 
     public Equation generationEquation(String nombre) {
 
@@ -29,35 +29,25 @@ public class MultiplicationService {
 
         final var maxY = (int) Math.ceil(nombre.length() / 2.0);
 
-        for(var i=0;i<nombre.length();i++){
-            var nom="x"+i;
+        for (var i = 0; i < nombre.length(); i++) {
+            var nom = "x" + i;
             var v = new Variable(nom, i);
             map.put(nom, v);
         }
 
-        for(var i=0;i<maxY;i++){
-            var nom="y"+i;
+        for (var i = 0; i < maxY; i++) {
+            var nom = "y" + i;
             var v = new Variable(nom, i);
             map.put(nom, v);
         }
 
-        var ordreMax=nombre.length()*2;
+        var ordreMax = nombre.length() * 2;
 
-        for(var ordre=0;ordre<ordreMax;ordre++) {
+        for (var ordre = 0; ordre < ordreMax; ordre++) {
             for (int i = 0; i < nombre.length(); i++) {
-//            char c = nombre.charAt(nombre.length() - i - 1);
 
-//            int n = c - '0';
-                int n;
-//                List<Operation> liste = new ArrayList<>();
-
-
-                //for (int j = 0; j <= i; j++) {
-                //var j2 = (i - j);
                 for (int j = 0; j < maxY; j++) {
-//                    var j2 = j;
-                    if(i+j==ordre) {
-//                if (j2 < maxY||true) {
+                    if (i + j == ordre) {
                         var x = "x" + i;
                         var y = "y" + j;
                         Variable v1, v2;
@@ -66,60 +56,40 @@ public class MultiplicationService {
                             Assert.notNull(v1, () -> "variable " + x + " inexistant(" + map + ")");
                             v2 = map.get(y);
                             Assert.notNull(v2, () -> "variable " + y + " inexistant(" + map + ")");
-//                    v1 = getVar(map, x, j);
-//                    v2 = getVar(map, y, j2);
-//                        for(var m:additions){
-//                            m.getOrdre()
-//                        }
-//                            var ordre = i + j2;
-                            if (ordre < nombre.length()) {
-                                //char c = nombre.charAt(nombre.length() - i - 1);
-                                char c = nombre.charAt(nombre.length() - ordre - 1);
-                                n = c - '0';
-                            } else {
-                                n = 0;
-                            }
-                            var n0=n;
-                            Assert.state(n>=0,()->"nombre invalide:"+n0);
-                            Assert.state(n<=9,()->"nombre invalide:"+n0);
-                            var ordre0=ordre;
+
+                            var ordre0 = ordre;
                             var m = additions.stream().filter(x2 -> x2.getOrdre() == ordre0).findFirst();
                             if (m.isPresent()) {
                                 m.get().addOperation(new Multiplication(v1, v2));
                             } else {
+                                int n = getNumber(nombre, ordre);
+                                Assert.state(n >= 0, () -> "nombre invalide:" + n);
+                                Assert.state(n <= 9, () -> "nombre invalide:" + n);
                                 var liste2 = new ArrayList<Operation>();
                                 liste2.add(new Multiplication(v1, v2));
                                 var add = new Addition(liste2, ordre, n);
                                 additions.add(add);
-//                            additions.add(new Multiplication(v1, v2));
                                 nombres.add(new Constante(n));
                             }
-//                        liste.add(new Multiplication(v1, v2));
 
                         }
                     }
-//                }
                 }
-
-//            var add = new Addition(liste, i, n);
-//            additions.add(add);
-
-//            nombres.add(new Constante(n));
             }
         }
 
         return new Equation(additions, nombre, nombres);
     }
 
-    private Variable getVar(Map<String, Variable> map, String nom, int no) {
-        Variable v1;
-        if (map.containsKey(nom)) {
-            v1 = map.get(nom);
+    private static int getNumber(String nombre, int ordre) {
+        int n;
+        if (ordre < nombre.length()) {
+            char c = nombre.charAt(nombre.length() - ordre - 1);
+            n = c - '0';
         } else {
-            v1 = new Variable(nom, no);
-            map.put(nom, v1);
+            n = 0;
         }
-        return v1;
+        return n;
     }
 
     public void resolution(Equation equation) {
@@ -137,31 +107,34 @@ public class MultiplicationService {
 
         Assert.notNull(listeVariables, "listeVariables est null (ordre=" + ordre + ")");
 
-        if(listeVariables.size()>0) {
+        if (listeVariables.size() > 0) {
 
             List<List<Integer>> listeValeursPossibles = getListeValeurPossibles(listeVariables.size());
 
-            for (var tmp : listeValeursPossibles) {
+            if (listeValeursPossibles != null) {
+                for (var tmp : listeValeursPossibles) {
 
-                Assert.isTrue(tmp.size() <= 2, "listeVariables est superieur à 2 " +
-                        "(size=" + tmp.size() + ",ordre=" + ordre + ",var=" + listeVariables + ")");
-                Assert.isTrue(listeVariables.size() <= tmp.size(), "listeVariables est superieur à 2 " +
-                        "(size=" + listeVariables.size() + ",ordre=" + ordre + ")");
+                    Assert.isTrue(tmp.size() <= 2, "listeVariables est superieur à 2 " +
+                            "(size=" + tmp.size() + ",ordre=" + ordre + ",var=" + listeVariables + ")");
+                    Assert.isTrue(listeVariables.size() <= tmp.size(), "listeVariables est superieur à 2 " +
+                            "(size=" + listeVariables.size() + ",ordre=" + ordre + ")");
 
-                // affectation des variables
-                for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
-                    var valeur = tmp.get(i);
-                    listeVariables.get(i).setAffecte(true);
-                    listeVariables.get(i).setValeur(valeur);
+                    // affectation des variables
+                    for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
+                        var valeur = tmp.get(i);
+                        listeVariables.get(i).setAffecte(true);
+                        listeVariables.get(i).setValeur(valeur);
+                    }
+
+                    // ajout du résultat si la valeur est bonne
+                    ajouteResultat(equation, ordre, listeResultat);
+
+                    // enleve l'affectation
+                    for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
+                        listeVariables.get(i).setAffecte(false);
+                        listeVariables.get(i).setValeur(-1);
+                    }
                 }
-
-                ajouteResultat(equation, ordre, listeResultat);
-
-                for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
-                    listeVariables.get(i).setAffecte(false);
-                    listeVariables.get(i).setValeur(-1);
-                }
-
             }
         } else {
 
@@ -188,11 +161,11 @@ public class MultiplicationService {
 
     private List<List<Integer>> getListeValeurPossibles(int nbVariables) {
 
-        Assert.state(nbVariables==1||nbVariables==2,()->"Nombre de variable invalide: "+nbVariables);
+        Assert.state(nbVariables == 1 || nbVariables == 2, () -> "Nombre de variable invalide: " + nbVariables);
 
-        if(map.containsKey(nbVariables)){
+        if (map.containsKey(nbVariables)) {
             return map.get(nbVariables);
-        } else if(nbVariables==2){
+        } else if (nbVariables == 2) {
             List<List<Integer>> listeValeursPossibles = new ArrayList<>();
             for (var i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
@@ -202,17 +175,17 @@ public class MultiplicationService {
                     listeValeursPossibles.add(ImmutableList.copyOf(liste));
                 }
             }
-            map.put(nbVariables,ImmutableList.copyOf(listeValeursPossibles));
+            map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
             return map.get(nbVariables);
-        } else if(nbVariables==1){
+        } else if (nbVariables == 1) {
             List<List<Integer>> listeValeursPossibles = new ArrayList<>();
             for (var i = 0; i < 10; i++) {
                 listeValeursPossibles.add(ImmutableList.of(i));
             }
-            map.put(nbVariables,ImmutableList.copyOf(listeValeursPossibles));
+            map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
             return map.get(nbVariables);
         } else {
-            Assert.state(false,"nombre de variable invalide");
+            Assert.state(false, "nombre de variable invalide");
         }
 
         return null;
