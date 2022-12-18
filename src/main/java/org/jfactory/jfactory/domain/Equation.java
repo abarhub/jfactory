@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.domain;
 
+import com.google.common.base.Preconditions;
 import org.springframework.util.Assert;
 
 import java.math.BigInteger;
@@ -39,21 +40,25 @@ public class Equation {
     }
 
     public Addition getEquationSimplifiee(int ordre){
+        Preconditions.checkNotNull(additions);
+//        Preconditions.checkArgument(ordre<additions.size(),"ordre=%d,size=%d",ordre,additions.size());
         List<Operation> liste=new ArrayList<>();
-        var add=additions.get(ordre);
-        var n=0;
-        for(var i=0;i<add.getAddition().size();i++){
-            var op=add.getAddition().get(i);
-            if(op instanceof Multiplication mult){
-                if(mult.getV1().isAffecte()&&mult.getV2().isAffecte()){
-                    n+=mult.getV1().getValeur()*mult.getV2().getValeur();
+        var n = 0;
+        if(ordre<additions.size()) {
+            var add = additions.get(ordre);
+            for (var i = 0; i < add.getAddition().size(); i++) {
+                var op = add.getAddition().get(i);
+                if (op instanceof Multiplication mult) {
+                    if (mult.getV1().isAffecte() && mult.getV2().isAffecte()) {
+                        n += mult.getV1().getValeur() * mult.getV2().getValeur();
+                    } else {
+                        liste.add(mult);
+                    }
+                } else if (op instanceof Constante cst) {
+                    n += cst.getValeur();
                 } else {
-                    liste.add(mult);
+                    Assert.state(false, "operation non gere: " + op);
                 }
-            } else if(op instanceof Constante cst){
-                n+=cst.getValeur();
-            } else {
-                Assert.state(false,"operation non gere: "+op);
             }
         }
         if(n!=0){
@@ -65,7 +70,7 @@ public class Equation {
     public BigInteger calcul(int ordre){
         var res=BigInteger.ZERO;
 
-        for(var i=0;((i<=ordre)||(ordre==-1)&&i< additions.size());i++){
+        for(var i=0;((ordre>-1&&i<=ordre)||(ordre==-1)&&i< additions.size());i++){
             var add=additions.get(i);
             for(var m:add.getAddition()){
                 if(m instanceof Multiplication mult){

@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class Addition {
-    private final List<Operation> addition;
+    private List<Operation> addition;
     private final int ordre;
     private final int valeur;
 
@@ -20,6 +20,12 @@ public class Addition {
 
     public List<Operation> getAddition() {
         return addition;
+    }
+
+    public void addOperation(Operation operation){
+        List<Operation> liste=new ArrayList<>(addition);
+        liste.add(operation);
+        this.addition = List.copyOf(liste);
     }
 
     public int getOrdre() {

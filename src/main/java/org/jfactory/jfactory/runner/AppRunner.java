@@ -25,9 +25,10 @@ public class AppRunner implements ApplicationRunner {
 
         String n;
 //        n = "15"; // 3*5
+//        n="9409"; // 97*97
 //        n = "115"; // 5*23
-        n = "28741"; // 41*701
-//        n = "99400891"; // 9967*9973
+//        n = "28741"; // 41*701
+        n = "99400891"; // 9967*9973
 
 
         var eq = multiplicationService.generationEquation(n);
