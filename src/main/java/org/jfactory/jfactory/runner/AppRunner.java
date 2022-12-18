@@ -27,19 +27,20 @@ public class AppRunner implements ApplicationRunner {
 //        n = "15"; // 3*5
 //        n="9409"; // 97*97
 //        n = "115"; // 5*23
-//        n = "28741"; // 41*701
-        n = "99400891"; // 9967*9973
+        n = "28741"; // 41*701
+//        n = "99400891"; // 9967*9973
+//        n = "2479541989"; //49789*49801
 
 
         var eq = multiplicationService.generationEquation(n);
 
         LOGGER.info("eq={}", eq);
 
-        Instant debut=Instant.now();
+        Instant debut = Instant.now();
 
         multiplicationService.resolution(eq);
 
-        Duration duree=Duration.between(debut,Instant.now());
+        Duration duree = Duration.between(debut, Instant.now());
         LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
     }
 }

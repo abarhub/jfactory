@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class MultiplicationService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
 
     private Map<Integer, List<List<Integer>>> map = new HashMap<>();
 
@@ -92,8 +92,8 @@ public class MultiplicationService {
         return n;
     }
 
-    public void resolution(Equation equation) {
-        resolution(equation, 0);
+    public List<Resultat> resolution(Equation equation) {
+        return resolution(equation, 0);
     }
 
     private List<Resultat> resolution(Equation equation, int ordre) {
