@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.runner;
 
+import org.jfactory.jfactory.listener.ParcourtLog;
 import org.jfactory.jfactory.service.MultiplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,10 @@ public class AppRunner implements ApplicationRunner {
         var eq = multiplicationService.generationEquation(n);
 
         LOGGER.info("eq={}", eq);
+
+        if(false){
+            multiplicationService.ajouteListener(new ParcourtLog(eq));
+        }
 
         Instant debut = Instant.now();
 

@@ -1,7 +1,7 @@
 package org.jfactory.jfactory.service;
 
-import com.google.common.collect.ImmutableList;
 import org.jfactory.jfactory.domain.*;
+import org.jfactory.jfactory.listener.ParcourtListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,9 @@ public class MultiplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
 
-    private Map<Integer, List<List<Integer>>> map = new HashMap<>();
+    private ListeValeursPossibles listeValeursPossibles=new ListeValeursPossiblesSimple();
+
+    private List<ParcourtListener> parcourtListeners=new ArrayList<>();
 
     public Equation generationEquation(String nombre) {
 
@@ -93,7 +95,14 @@ public class MultiplicationService {
     }
 
     public List<Resultat> resolution(Equation equation) {
-        return resolution(equation, 0);
+        for(var parcourt:parcourtListeners){
+            parcourt.debut();
+        }
+        var res= resolution(equation, 0);
+        for(var parcourt:parcourtListeners){
+            parcourt.fin();
+        }
+        return res;
     }
 
     private List<Resultat> resolution(Equation equation, int ordre) {
@@ -107,9 +116,13 @@ public class MultiplicationService {
 
         Assert.notNull(listeVariables, "listeVariables est null (ordre=" + ordre + ")");
 
+        for(var parcourt:parcourtListeners){
+            parcourt.variablesAAffecter(ordre,listeVariables);
+        }
+
         if (listeVariables.size() > 0) {
 
-            List<List<Integer>> listeValeursPossibles = getListeValeurPossibles(listeVariables.size());
+            List<List<Integer>> listeValeursPossibles = this.listeValeursPossibles.getListeValeurPossibles(equation,ordre,listeVariables);
 
             if (listeValeursPossibles != null) {
                 for (var tmp : listeValeursPossibles) {
@@ -125,11 +138,17 @@ public class MultiplicationService {
                         listeVariables.get(i).setAffecte(true);
                         listeVariables.get(i).setValeur(valeur);
                     }
+                    for(var parcourt:parcourtListeners){
+                        parcourt.affecte(ordre,listeVariables);
+                    }
 
                     // ajout du résultat si la valeur est bonne
                     ajouteResultat(equation, ordre, listeResultat);
 
                     // enleve l'affectation
+                    for(var parcourt:parcourtListeners){
+                        parcourt.desaffecte(ordre,listeVariables);
+                    }
                     for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
                         listeVariables.get(i).setAffecte(false);
                         listeVariables.get(i).setValeur(-1);
@@ -148,47 +167,38 @@ public class MultiplicationService {
     private void ajouteResultat(Equation equation, int ordre, List<Resultat> listeResultat) {
         if (equation.estValide(ordre, ordre + 1 >= equation.getMax())) {
             if (ordre + 1 < equation.getMax()) {
+                for(var parcourt:parcourtListeners){
+                    parcourt.entre(ordre+1);
+                }
                 var res = resolution(equation, ordre + 1);
+                for(var parcourt:parcourtListeners){
+                    parcourt.sort(ordre+1);
+                }
                 listeResultat.addAll(res);
             } else {
                 var res = equation.getResolution();
                 LOGGER.atInfo().log("Trouve: {}", res);
+                for(var parcourt:parcourtListeners){
+                    parcourt.trouve(ordre,res);
+                }
                 listeResultat.add(res);
             }
         }
     }
 
-
-    private List<List<Integer>> getListeValeurPossibles(int nbVariables) {
-
-        Assert.state(nbVariables == 1 || nbVariables == 2, () -> "Nombre de variable invalide: " + nbVariables);
-
-        if (map.containsKey(nbVariables)) {
-            return map.get(nbVariables);
-        } else if (nbVariables == 2) {
-            List<List<Integer>> listeValeursPossibles = new ArrayList<>();
-            for (var i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    List<Integer> liste = new ArrayList<>();
-                    liste.add(i);
-                    liste.add(j);
-                    listeValeursPossibles.add(ImmutableList.copyOf(liste));
-                }
-            }
-            map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
-            return map.get(nbVariables);
-        } else if (nbVariables == 1) {
-            List<List<Integer>> listeValeursPossibles = new ArrayList<>();
-            for (var i = 0; i < 10; i++) {
-                listeValeursPossibles.add(ImmutableList.of(i));
-            }
-            map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
-            return map.get(nbVariables);
-        } else {
-            Assert.state(false, "nombre de variable invalide");
-        }
-
-        return null;
+    public ListeValeursPossibles getListeValeursPossibles() {
+        return listeValeursPossibles;
     }
 
+    public void setListeValeursPossibles(ListeValeursPossibles listeValeursPossibles) {
+        this.listeValeursPossibles = listeValeursPossibles;
+    }
+
+    public void ajouteListener(ParcourtListener parcourtListener){
+        this.parcourtListeners.add(parcourtListener);
+    }
+
+    public void supprimerListener(ParcourtListener parcourtListener){
+        this.parcourtListeners.remove(parcourtListener);
+    }
 }

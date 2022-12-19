@@ -76,4 +76,12 @@ public class Variable {
             return nom;
         }
     }
+
+    public String toString2(){
+        if (affecte) {
+            return nom+"=" + valeur;
+        } else {
+            return nom+"=?";
+        }
+    }
 }
