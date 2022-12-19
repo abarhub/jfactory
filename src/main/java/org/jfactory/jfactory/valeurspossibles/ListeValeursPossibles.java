@@ -1,4 +1,7 @@
-package org.jfactory.jfactory.domain;
+package org.jfactory.jfactory.valeurspossibles;
+
+import org.jfactory.jfactory.domain.Equation;
+import org.jfactory.jfactory.domain.Variable;
 
 import java.util.List;
 

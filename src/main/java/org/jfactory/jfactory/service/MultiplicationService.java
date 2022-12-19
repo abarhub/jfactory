@@ -2,6 +2,8 @@ package org.jfactory.jfactory.service;
 
 import org.jfactory.jfactory.domain.*;
 import org.jfactory.jfactory.listener.ParcourtListener;
+import org.jfactory.jfactory.valeurspossibles.ListeValeursPossibles;
+import org.jfactory.jfactory.valeurspossibles.ListeValeursPossiblesSimple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,9 @@ public class MultiplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiplicationService.class);
 
-    private ListeValeursPossibles listeValeursPossibles=new ListeValeursPossiblesSimple();
+    private ListeValeursPossibles listeValeursPossibles = new ListeValeursPossiblesSimple();
 
-    private List<ParcourtListener> parcourtListeners=new ArrayList<>();
+    private List<ParcourtListener> parcourtListeners = new ArrayList<>();
 
     public Equation generationEquation(String nombre) {
 
@@ -95,11 +97,11 @@ public class MultiplicationService {
     }
 
     public List<Resultat> resolution(Equation equation) {
-        for(var parcourt:parcourtListeners){
+        for (var parcourt : parcourtListeners) {
             parcourt.debut();
         }
-        var res= resolution(equation, 0);
-        for(var parcourt:parcourtListeners){
+        var res = resolution(equation, 0);
+        for (var parcourt : parcourtListeners) {
             parcourt.fin();
         }
         return res;
@@ -116,13 +118,13 @@ public class MultiplicationService {
 
         Assert.notNull(listeVariables, "listeVariables est null (ordre=" + ordre + ")");
 
-        for(var parcourt:parcourtListeners){
-            parcourt.variablesAAffecter(ordre,listeVariables);
+        for (var parcourt : parcourtListeners) {
+            parcourt.variablesAAffecter(ordre, listeVariables);
         }
 
         if (listeVariables.size() > 0) {
 
-            List<List<Integer>> listeValeursPossibles = this.listeValeursPossibles.getListeValeurPossibles(equation,ordre,listeVariables);
+            List<List<Integer>> listeValeursPossibles = this.listeValeursPossibles.getListeValeurPossibles(equation, ordre, listeVariables);
 
             if (listeValeursPossibles != null) {
                 for (var tmp : listeValeursPossibles) {
@@ -138,16 +140,16 @@ public class MultiplicationService {
                         listeVariables.get(i).setAffecte(true);
                         listeVariables.get(i).setValeur(valeur);
                     }
-                    for(var parcourt:parcourtListeners){
-                        parcourt.affecte(ordre,listeVariables);
+                    for (var parcourt : parcourtListeners) {
+                        parcourt.affecte(ordre, listeVariables);
                     }
 
                     // ajout du résultat si la valeur est bonne
                     ajouteResultat(equation, ordre, listeResultat);
 
                     // enleve l'affectation
-                    for(var parcourt:parcourtListeners){
-                        parcourt.desaffecte(ordre,listeVariables);
+                    for (var parcourt : parcourtListeners) {
+                        parcourt.desaffecte(ordre, listeVariables);
                     }
                     for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
                         listeVariables.get(i).setAffecte(false);
@@ -167,21 +169,25 @@ public class MultiplicationService {
     private void ajouteResultat(Equation equation, int ordre, List<Resultat> listeResultat) {
         if (equation.estValide(ordre, ordre + 1 >= equation.getMax())) {
             if (ordre + 1 < equation.getMax()) {
-                for(var parcourt:parcourtListeners){
-                    parcourt.entre(ordre+1);
+                for (var parcourt : parcourtListeners) {
+                    parcourt.entre(ordre + 1);
                 }
                 var res = resolution(equation, ordre + 1);
-                for(var parcourt:parcourtListeners){
-                    parcourt.sort(ordre+1);
+                for (var parcourt : parcourtListeners) {
+                    parcourt.sort(ordre + 1);
                 }
                 listeResultat.addAll(res);
             } else {
                 var res = equation.getResolution();
                 LOGGER.atInfo().log("Trouve: {}", res);
-                for(var parcourt:parcourtListeners){
-                    parcourt.trouve(ordre,res);
+                for (var parcourt : parcourtListeners) {
+                    parcourt.trouve(ordre, res);
                 }
                 listeResultat.add(res);
+            }
+        } else {
+            for (var parcourt : parcourtListeners) {
+                parcourt.invalide(ordre);
             }
         }
     }
@@ -194,11 +200,11 @@ public class MultiplicationService {
         this.listeValeursPossibles = listeValeursPossibles;
     }
 
-    public void ajouteListener(ParcourtListener parcourtListener){
+    public void ajouteListener(ParcourtListener parcourtListener) {
         this.parcourtListeners.add(parcourtListener);
     }
 
-    public void supprimerListener(ParcourtListener parcourtListener){
+    public void supprimerListener(ParcourtListener parcourtListener) {
         this.parcourtListeners.remove(parcourtListener);
     }
 }

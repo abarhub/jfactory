@@ -6,8 +6,8 @@ import org.jfactory.jfactory.domain.Variable;
 import java.util.List;
 
 public interface ParcourtListener {
-    
-    
+
+
     void trouve(int ordre, Resultat resultat);
 
     void entre(int ordre);
@@ -23,4 +23,6 @@ public interface ParcourtListener {
     void debut();
 
     void fin();
+
+    void invalide(int ordre);
 }

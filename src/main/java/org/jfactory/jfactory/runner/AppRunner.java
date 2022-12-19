@@ -37,7 +37,12 @@ public class AppRunner implements ApplicationRunner {
 
         LOGGER.info("eq={}", eq);
 
-        if(false){
+        LOGGER.atInfo()
+                .addKeyValue("oldT", 1)
+                .addKeyValue("newT", 2)
+                .log("Temperature changed.");
+
+        if (true) {
             multiplicationService.ajouteListener(new ParcourtLog(eq));
         }
 

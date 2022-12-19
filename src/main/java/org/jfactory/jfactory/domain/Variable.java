@@ -1,11 +1,9 @@
 package org.jfactory.jfactory.domain;
 
-import org.jfactory.jfactory.service.MultiplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class Variable {
 
@@ -77,11 +75,11 @@ public class Variable {
         }
     }
 
-    public String toString2(){
+    public String toString2() {
         if (affecte) {
-            return nom+"=" + valeur;
+            return nom + "=" + valeur;
         } else {
-            return nom+"=?";
+            return nom + "=?";
         }
     }
 }
