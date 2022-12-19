@@ -2,6 +2,7 @@ package org.jfactory.jfactory.runner;
 
 import org.jfactory.jfactory.listener.ParcourtLog;
 import org.jfactory.jfactory.service.MultiplicationService;
+import org.jfactory.jfactory.valeurspossibles.ListeValeursPossiblesPrecalcule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,10 @@ public class AppRunner implements ApplicationRunner {
 
         if (true) {
             multiplicationService.ajouteListener(new ParcourtLog(eq));
+        }
+
+        if(true){
+            multiplicationService.setListeValeursPossibles(new ListeValeursPossiblesPrecalcule());
         }
 
         Instant debut = Instant.now();

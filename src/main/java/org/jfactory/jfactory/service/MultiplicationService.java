@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,7 +125,11 @@ public class MultiplicationService {
 
         if (listeVariables.size() > 0) {
 
-            List<List<Integer>> listeValeursPossibles = this.listeValeursPossibles.getListeValeurPossibles(equation, ordre, listeVariables);
+            List<Doublet> listeValeursPossibles = this.listeValeursPossibles.getListeValeurPossibles(equation, ordre, listeVariables, add);
+
+            for (var parcourt : parcourtListeners) {
+                parcourt.valeurPossibles(ordre, listeVariables,listeValeursPossibles);
+            }
 
             if (listeValeursPossibles != null) {
                 for (var tmp : listeValeursPossibles) {
@@ -136,7 +141,12 @@ public class MultiplicationService {
 
                     // affectation des variables
                     for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
-                        var valeur = tmp.get(i);
+                        var valeur = 0;
+                        if(StringUtils.startsWithIgnoreCase(listeVariables.get(i).getNom(),"x")){
+                            valeur= tmp.getX();
+                        } else {
+                            valeur= tmp.getY();
+                        }
                         listeVariables.get(i).setAffecte(true);
                         listeVariables.get(i).setValeur(valeur);
                     }

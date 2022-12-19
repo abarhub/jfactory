@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.listener;
 
+import org.jfactory.jfactory.domain.Doublet;
 import org.jfactory.jfactory.domain.Equation;
 import org.jfactory.jfactory.domain.Resultat;
 import org.jfactory.jfactory.domain.Variable;
@@ -55,7 +56,11 @@ public class ParcourtLog implements ParcourtListener {
 
     @Override
     public void affecte(int ordre, List<Variable> listeVariables) {
-        LOGGER.atDebug().addKeyValue("ordre", ordre).setMessage("Affectation pour l'ordre {} : {}").addArgument(ordre).addArgument(() -> getVariables(listeVariables)).log();
+        LOGGER.atDebug().addKeyValue("ordre", ordre).setMessage("Affectation pour l'ordre {} : {}, eq={}")
+                .addArgument(ordre)
+                .addArgument(() -> getVariables(listeVariables))
+                .addArgument(equation)
+                .log();
     }
 
     @Override
@@ -94,5 +99,14 @@ public class ParcourtLog implements ParcourtListener {
             mapInvalide.put(ordre, BigInteger.ZERO);
         }
         mapInvalide.put(ordre, mapInvalide.get(ordre).add(BigInteger.ONE));
+    }
+
+    @Override
+    public void valeurPossibles(int ordre, List<Variable> listeVariables, List<Doublet> listeValeursPossibles) {
+        LOGGER.atDebug().setMessage("Liste des valeurs possibles : ordre={}, variables={}, valeursPossibles={}")
+                .addArgument(ordre)
+                .addArgument(listeVariables)
+                .addArgument(listeValeursPossibles)
+                .log();
     }
 }

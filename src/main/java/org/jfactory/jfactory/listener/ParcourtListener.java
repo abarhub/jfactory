@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.listener;
 
+import org.jfactory.jfactory.domain.Doublet;
 import org.jfactory.jfactory.domain.Resultat;
 import org.jfactory.jfactory.domain.Variable;
 
@@ -25,4 +26,6 @@ public interface ParcourtListener {
     void fin();
 
     void invalide(int ordre);
+
+    void valeurPossibles(int ordre, List<Variable> listeVariables, List<Doublet> listeValeursPossibles);
 }

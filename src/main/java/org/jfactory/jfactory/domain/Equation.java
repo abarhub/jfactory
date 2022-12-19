@@ -2,10 +2,12 @@ package org.jfactory.jfactory.domain;
 
 import com.google.common.base.Preconditions;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 public class Equation {
@@ -145,5 +147,11 @@ public class Equation {
             }
         }
         return new Resultat(List.copyOf(liste), valeurs, valeurBi);
+    }
+
+    public Optional<Variable> getVariable(boolean x, int no){
+        return listeVariables.stream()
+                .filter(v-> StringUtils.startsWithIgnoreCase(v.getNom(),(x)?"x":"y")&&v.getNo()==no)
+                .findFirst();
     }
 }
