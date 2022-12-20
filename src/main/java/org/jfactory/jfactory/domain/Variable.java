@@ -2,6 +2,7 @@ package org.jfactory.jfactory.domain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
@@ -15,11 +16,14 @@ public class Variable {
 
     private final int no;
 
+    private final boolean x;
+
     public Variable(String nom, int no) {
         this.nom = nom;
         this.no = no;
         affecte = false;
         valeur = -1;
+        x=StringUtils.startsWithIgnoreCase(nom,"x");
     }
 
     public Variable(Variable v) {
@@ -27,6 +31,7 @@ public class Variable {
         this.no = v.getNo();
         affecte = v.isAffecte();
         valeur = v.getValeur();
+        x=v.isX();
     }
 
     public String getNom() {
@@ -81,5 +86,9 @@ public class Variable {
         } else {
             return nom + "=?";
         }
+    }
+
+    public boolean isX() {
+        return x;
     }
 }

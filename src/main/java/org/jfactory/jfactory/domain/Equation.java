@@ -151,7 +151,13 @@ public class Equation {
 
     public Optional<Variable> getVariable(boolean x, int no){
         return listeVariables.stream()
-                .filter(v-> StringUtils.startsWithIgnoreCase(v.getNom(),(x)?"x":"y")&&v.getNo()==no)
+                .filter(v-> v.isX()==x&&v.getNo()==no)
                 .findFirst();
+    }
+
+    public long getNbVariable(boolean x){
+        return listeVariables.stream()
+                .filter(v-> v.isX()==x)
+                .count();
     }
 }
