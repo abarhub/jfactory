@@ -1,6 +1,7 @@
 package org.jfactory.jfactory.runner;
 
 import org.jfactory.jfactory.listener.ParcourtLog;
+import org.jfactory.jfactory.service.FermatService;
 import org.jfactory.jfactory.service.MultiplicationService;
 import org.jfactory.jfactory.service.ResolutionCsp;
 import org.jfactory.jfactory.valeurspossibles.ListeValeursPossiblesPrecalcule;
@@ -11,6 +12,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -27,8 +29,27 @@ public class AppRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        resolution();
-//        resolutionCsp();
+        int methode;
+//        methode=1;
+//        methode=2;
+        methode=3;
+        if(methode==1) {
+            resolution();
+        } else if(methode==2) {
+            resolutionCsp();
+        } else if(methode==3){
+            factorisationFermat();
+        }
+    }
+
+    private void factorisationFermat(){
+        FermatService fermatService=new FermatService();
+
+        BigInteger n;
+        n=BigInteger.valueOf(115);
+
+        var res=fermatService.factorisation(n);
+        LOGGER.info("{}={}",n,res);
     }
 
     private void resolutionCsp() {
