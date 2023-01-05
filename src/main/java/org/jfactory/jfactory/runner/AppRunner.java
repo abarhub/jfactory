@@ -1,6 +1,7 @@
 package org.jfactory.jfactory.runner;
 
 import org.jfactory.jfactory.listener.ParcourtLog;
+import org.jfactory.jfactory.service.AnalyseMultiplicationService;
 import org.jfactory.jfactory.service.FermatService;
 import org.jfactory.jfactory.service.MultiplicationService;
 import org.jfactory.jfactory.service.ResolutionCsp;
@@ -32,14 +33,22 @@ public class AppRunner implements ApplicationRunner {
         int methode;
 //        methode=1;
 //        methode=2;
-        methode=3;
+//        methode=3;
+        methode=4;
         if(methode==1) {
             resolution();
         } else if(methode==2) {
             resolutionCsp();
         } else if(methode==3){
             factorisationFermat();
+        } else if(methode==4){
+            analyseMultiplication();
         }
+    }
+
+    private void analyseMultiplication(){
+        AnalyseMultiplicationService analyseMultiplicationService=new AnalyseMultiplicationService();
+        analyseMultiplicationService.run();
     }
 
     private void factorisationFermat(){
