@@ -1,6 +1,8 @@
 package org.jfactory.jfactory.service;
 
+import org.jfactory.jfactory.domain.Constante;
 import org.jfactory.jfactory.domain.Equation;
+import org.jfactory.jfactory.domain.Multiplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -77,7 +79,46 @@ public class AnalyseMultiplicationService {
             y2.get().setAffecte(false);
             y2.get().setValeur(-1);
 
-            LOGGER.atInfo().log("eq ordre no {} : {}",2, eq.getEquationSimplifiee(2));
+            var tmp3=eq.getEquationSimplifiee(2);
+            LOGGER.atInfo().log("eq ordre no {} : {}",2, tmp3);
+
+            long constante=0;
+            long multX=-1;
+            long multY=-1;
+
+            for(var tmp4:tmp3.getAddition()){
+                if(tmp4 instanceof Constante cst){
+                    constante+= cst.getValeur();
+                } else if(tmp4 instanceof Multiplication m){
+                    var v1=m.getV1();
+                    var v2=m.getV2();
+                    if(v1.isAffecte()){
+                        Assert.state(!v2.isAffecte(),"v2 non affecté:"+tmp4);
+                        if(v2.isX()){
+                            Assert.state(v2.getNom().equals(x2.get().getNom()),"v2 invalide");
+                            multX=v1.getValeur();
+                        } else {
+                            Assert.state(v2.getNom().equals(y2.get().getNom()),"v2 invalide");
+                            multY=v1.getValeur();
+                        }
+                    } else {
+                        Assert.state(v2.isAffecte(),"v2 non affecté:"+tmp4);
+                        if(v1.isX()){
+                            Assert.state(v1.getNom().equals(x2.get().getNom()),"v1 invalide");
+                            multX=v2.getValeur();
+                        } else {
+                            Assert.state(v1.getNom().equals(y2.get().getNom()),"v1 invalide");
+                            multY=v2.getValeur();
+                        }
+                    }
+                } else {
+                    Assert.state(false,"operation non géré:"+tmp4);
+                }
+            }
+            Assert.state(multX>=0,"mult x invalide");
+            Assert.state(multY>=0,"mult y invalide");
+
+            LOGGER.atInfo().log("eq: {}*{} + {}*{} + {} = {}",multX,x2.get().getNom(),multY,y2.get().getNom(),constante,tmp3.getValeur());
 
         }catch (Exception e){
             LOGGER.atError().log("Erreur",e);
