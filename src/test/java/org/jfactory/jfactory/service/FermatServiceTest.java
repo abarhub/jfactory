@@ -32,8 +32,8 @@ class FermatServiceTest {
 //        n=BigInteger.valueOf(99998800003591L); // 9999937 * 9999943
 //        n=new BigInteger("13615791439058800032819559173865300498204302398087",10)
 //                .multiply(new BigInteger("24052778196359970728000014369293610757236829751899",10));
-//        n=new BigInteger("4248200851",10)
-//                .multiply(new BigInteger("6210319747",10)); // n =26382685634187504697, durée = 13s
+        n=new BigInteger("4248200851",10)
+                .multiply(new BigInteger("6210319747",10)); // n =26382685634187504697, durée = 13s
 //        n=new BigInteger("859139077199680238479671925831",10)
 //                .multiply(new BigInteger("859139077199680238479671925831",10)); // trop long (>1h)
 

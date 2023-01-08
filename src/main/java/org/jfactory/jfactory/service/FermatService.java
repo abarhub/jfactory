@@ -6,23 +6,45 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.Set;
 
 public class FermatService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FermatService.class);
 
-    // factorisation de fermat : https://blogdemaths.wordpress.com/2014/05/18/savez-vous-factoriser-a-la-mode-de-fermat/
+    private static final Set<BigInteger> TERMINAISON_CARRE = Set.of(BigInteger.valueOf(0),
+            BigInteger.valueOf(1), BigInteger.valueOf(4), BigInteger.valueOf(9), BigInteger.valueOf(16),
+            BigInteger.valueOf(21), BigInteger.valueOf(24), BigInteger.valueOf(25), BigInteger.valueOf(29),
+            BigInteger.valueOf(36), BigInteger.valueOf(41), BigInteger.valueOf(44), BigInteger.valueOf(49),
+            BigInteger.valueOf(56), BigInteger.valueOf(61), BigInteger.valueOf(64), BigInteger.valueOf(69),
+            BigInteger.valueOf(76), BigInteger.valueOf(81), BigInteger.valueOf(84), BigInteger.valueOf(89),
+            BigInteger.valueOf(96));
+
+    private static final BigInteger BI_100 = BigInteger.valueOf(100);
+
+    // La vérification est plus lente si la valeur est true
+    private static final boolean OPTIMISE_VERIFICATION_CARRE = false;
+
+    /**
+     * Factorisation suivant la méthode de fermat
+     * factorisation de fermat :
+     * https://blogdemaths.wordpress.com/2014/05/18/savez-vous-factoriser-a-la-mode-de-fermat/
+     * https://accromath.uqam.ca/2019/10/lheritage-de-fermat-pour-la-factorisation-des-grands-nombres/
+     *
+     * @param n Le nombre a factoriser Il doit être le produite de 2 nombres premiers
+     * @return Une paire de nombre à factoriser. Le 1er paramètre est inferieur ou égal au 2eme paramètre
+     */
     public Optional<Pair> factorisation(BigInteger n) {
         var tmp = n.sqrt();
 
         Optional<Pair> res = Optional.empty();
         final BigInteger max = n.add(BigInteger.ONE);
-        for (BigInteger i = BigInteger.ONE; i.compareTo(max)<=0; i=i.add(BigInteger.ONE)) {
+        for (BigInteger i = BigInteger.ONE; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
             var a = tmp.add(i);
             var tmp2 = a.pow(2).subtract(n);
 
-            var tmp3 = tmp2.sqrt();
-            if (tmp3.multiply(tmp3).equals(tmp2)) {
+            var tmp3 = racineCaree(tmp2);
+            if (!tmp3.equals(BigInteger.ZERO)) {
                 var b = tmp3;
                 var tmp4 = a.add(b);
                 var tmp5 = a.subtract(b);
@@ -43,6 +65,27 @@ public class FermatService {
             LOGGER.info("pas trouve pour {}", n);
         }
         return res;
+    }
+
+    /**
+     * Retourne la racine carrée du nombre ou 0 si la racine carée n'est pas entiere
+     *
+     * @param carre Le carré ou il faut prendre la racine carré
+     * @return La racine carée ou 0 si le paramétre n'est pas un carré
+     */
+    private BigInteger racineCaree(BigInteger carre) {
+        if (OPTIMISE_VERIFICATION_CARRE) {
+            var tmp = carre.mod(BI_100);
+            if (!TERMINAISON_CARRE.contains(tmp)) {
+                return BigInteger.ZERO;
+            }
+        }
+        var racineCarre = carre.sqrt();
+        if (racineCarre.multiply(racineCarre).equals(carre)) {
+            return racineCarre;
+        } else {
+            return BigInteger.ZERO;
+        }
     }
 
 }
