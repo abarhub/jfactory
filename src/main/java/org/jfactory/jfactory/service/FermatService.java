@@ -16,9 +16,9 @@ public class FermatService {
         var tmp = n.sqrt();
 
         Optional<Pair> res = Optional.empty();
-        final long max = n.add(BigInteger.ONE).longValueExact();
-        for (long i = 1; i <= max; i++) {
-            var a = tmp.add(BigInteger.valueOf(i));
+        final BigInteger max = n.add(BigInteger.ONE);
+        for (BigInteger i = BigInteger.ONE; i.compareTo(max)<=0; i=i.add(BigInteger.ONE)) {
+            var a = tmp.add(i);
             var tmp2 = a.pow(2).subtract(n);
 
             var tmp3 = tmp2.sqrt();
