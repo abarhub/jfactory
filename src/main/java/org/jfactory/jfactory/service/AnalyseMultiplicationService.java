@@ -5,6 +5,9 @@ import org.jfactory.jfactory.domain.Addition;
 import org.jfactory.jfactory.domain.Constante;
 import org.jfactory.jfactory.domain.Equation;
 import org.jfactory.jfactory.domain.Multiplication;
+import org.jfactory.jfactory.listener.EnregistreParcourtListener;
+import org.jfactory.jfactory.listener.ParcourtLog;
+import org.jfactory.jfactory.valeurspossibles.ListeValeursPossiblesPrecalcule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -13,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +61,53 @@ public class AnalyseMultiplicationService {
     public void run() {
 //        test1();
 //        test2();
-        test3();
+//        test3();
+        test4();
+    }
+
+    private void test4() {
+
+
+        String n;
+//        n = "15"; // 3*5
+//        n="9409"; // 97*97
+//        n = "115"; // 5*23
+        n = "28741"; // 41*701
+//        n = "99400891"; // 9967*9973
+//        n = "2479541989"; //49789*49801
+//        n = "99998800003591"; //9999937 * 9999943
+
+        var multiplicationService=new MultiplicationService();
+
+        var eq = multiplicationService.generationEquation(n);
+
+        LOGGER.info("eq={}", eq);
+
+        EnregistreParcourtListener parcourtListener=new EnregistreParcourtListener(eq);
+        multiplicationService.ajouteListener(parcourtListener);
+
+        if (true) {
+            multiplicationService.ajouteListener(new ParcourtLog(eq));
+        }
+
+        if(true){
+            multiplicationService.setListeValeursPossibles(new ListeValeursPossiblesPrecalcule());
+        }
+
+        Instant debut = Instant.now();
+
+        multiplicationService.resolution(eq);
+
+        Duration duree = Duration.between(debut, Instant.now());
+        LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
+
+        Path p = Path.of("D:/temp/analyse_" + n + "_complet.csv");
+        LOGGER.atInfo().log("enregistrement dans {}",p);
+        try {
+            parcourtListener.writerFile(p);
+        }catch (IOException e){
+            LOGGER.atError().log("Erreur pour ecrire le fichier {}",p,e);
+        }
     }
 
     public void test3() {
