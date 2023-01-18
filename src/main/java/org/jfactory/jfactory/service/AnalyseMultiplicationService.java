@@ -108,7 +108,7 @@ public class AnalyseMultiplicationService {
             var iter=map3.entrySet().iterator();
             while(iter.hasNext()){
                 var tmp5=iter.next();
-                if(map2.get(tmp5.getKey())>5){
+                if(map2.get(tmp5.getKey())<4){
                     iter.remove();
                 }
             }
@@ -116,6 +116,12 @@ public class AnalyseMultiplicationService {
             LOGGER.atInfo().log("map2={}", map2);
 
             LOGGER.atInfo().log("map3={}", map3);
+
+            LOGGER.atInfo().log("map3 ={}", map3.entrySet().stream().filter(x->x.getValue().size()<4).collect(Collectors.toList()));
+
+            for(var tmp:map3.entrySet()) {
+                LOGGER.atInfo().log("map3({})={}", tmp.getKey(),tmp.getValue());
+            }
 
         } catch (Exception e) {
             LOGGER.atError().log("Erreur", e);
