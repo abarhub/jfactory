@@ -15,6 +15,11 @@ public class Multiplication implements Operation {
         return v1 + "*" + v2;
     }
 
+    @Override
+    public String toString2() {
+        return v1.toString3()+"*"+getV2().toString3();
+    }
+
     public Variable getV1() {
         return v1;
     }

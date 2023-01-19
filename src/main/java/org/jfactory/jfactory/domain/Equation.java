@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class Equation {
 
@@ -205,6 +206,19 @@ public class Equation {
 
         EquationSimple equationSimple = new EquationSimple(a,b,Optional.of(tmp2.intValueExact()),valeurs.get(ordre).getValeur(), reste,rest2);
         return Optional.of(equationSimple);
+    }
+
+    public String toStringSimplifie(int ordre){
+        if(ordre>=0){
+            return  additions.stream()
+                    .filter(x->x.getOrdre()<=ordre)
+                    .map(Addition::toString2)
+                    .collect(Collectors.joining(","));
+        } else {
+            return  additions.stream()
+                    .map(Addition::toString2)
+                    .collect(Collectors.joining(","));
+        }
     }
 
 }

@@ -71,8 +71,8 @@ public class AnalyseMultiplicationService {
         String n;
 //        n = "15"; // 3*5
 //        n="9409"; // 97*97
-        n = "115"; // 5*23
-//        n = "28741"; // 41*701
+//        n = "115"; // 5*23
+        n = "28741"; // 41*701
 //        n = "99400891"; // 9967*9973
 //        n = "2479541989"; //49789*49801
 //        n = "99998800003591"; //9999937 * 9999943
@@ -101,7 +101,7 @@ public class AnalyseMultiplicationService {
         Duration duree = Duration.between(debut, Instant.now());
         LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
 
-        Path p = Path.of("D:/temp/analyse_" + n + "_complet.csv");
+        Path p = Path.of("analyse/analyse_" + n + "_complet.csv");
         LOGGER.atInfo().log("enregistrement dans {}",p);
         try {
             parcourtListener.writerFile(p);

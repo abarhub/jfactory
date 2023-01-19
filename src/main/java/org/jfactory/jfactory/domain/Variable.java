@@ -88,6 +88,14 @@ public class Variable {
         }
     }
 
+    public String toString3() {
+        if (affecte) {
+            return nom + "(" + valeur+")";
+        } else {
+            return nom;
+        }
+    }
+
     public boolean isX() {
         return x;
     }

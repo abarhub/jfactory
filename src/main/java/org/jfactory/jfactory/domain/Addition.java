@@ -44,6 +44,12 @@ public class Addition {
                 "=" + valeur + "(" + ordre + ")";
     }
 
+    public String toString2() {
+        return addition.stream().map(Operation::toString2)
+                .collect(Collectors.joining("+")) +
+                "=" + valeur + "(" + ordre + ")";
+    }
+
     public List<Variable> getToutesVariables() {
         return getVariables(false);
     }

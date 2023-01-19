@@ -31,4 +31,9 @@ public class Constante implements Operation {
     public String toString() {
         return "" + valeur;
     }
+
+    @Override
+    public String toString2() {
+        return toString();
+    }
 }

@@ -24,6 +24,8 @@ public class EnregistreParcourtListener implements ParcourtListener {
 
     public static final String COLONNE_NO="no";
     public static final String COLONNE_ORDRE="ordre";
+    public static final String COLONNE_NO_PARENT="no_parent";
+    public static final String COLONNE_EQUATION="equation";
 
     private Map<Integer, Integer> mapX;
 
@@ -34,6 +36,8 @@ public class EnregistreParcourtListener implements ParcourtListener {
     private final Equation equation;
 
     private long id;
+
+    private Map<Integer,Long> dernierId=new HashMap<>();
 
     public EnregistreParcourtListener(Equation equation) {
         this.equation = equation;
@@ -89,6 +93,16 @@ public class EnregistreParcourtListener implements ParcourtListener {
         map.put(COLONNE_SOLUTION, "0");
         map.put(COLONNE_CHEMIN_SOLUTION, "0");
         map.put(COLONNE_NO, id + "");
+        map.put(COLONNE_NO_PARENT, "");
+
+        if(dernierId.containsKey(ordre-1)){
+            map.put(COLONNE_NO_PARENT, dernierId.get(ordre-1) + "");
+        }
+
+        final var id0=id;
+
+        dernierId.put(ordre,id0);
+
         id++;
 
         csv.add(map);
@@ -110,6 +124,13 @@ public class EnregistreParcourtListener implements ParcourtListener {
 //        }
 
 
+        map.put(COLONNE_EQUATION,"\""+toString(equation, ordre)+"\"");
+
+
+    }
+
+    private String toString(Equation equation, int ordre) {
+        return equation.toStringSimplifie(ordre);
     }
 
     private String toString(Optional<Integer> opt){
