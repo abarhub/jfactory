@@ -116,7 +116,7 @@ public class EnregistreParcourtListener implements ParcourtListener {
 //                        toString(tmp3.getA()), toString(tmp3.getB()), toString(tmp3.getC()), tmp3.getN(),tmp3.getRest(), ordre, equation);
                 map.put("a", toString(tmp3.getA()));
                 map.put("b", toString(tmp3.getB()));
-                map.put("c", toString(tmp3.getB()));
+                map.put("c", toString(tmp3.getC()));
                 map.put("n", tmp3.getN()+"");
                 map.put("rest", tmp3.getRest()+"");
                 map.put("rest2", tmp3.getRest2()+"");
@@ -124,7 +124,7 @@ public class EnregistreParcourtListener implements ParcourtListener {
 //        }
 
 
-        map.put(COLONNE_EQUATION,"\""+toString(equation, ordre)+"\"");
+//        map.put(COLONNE_EQUATION,"\""+toString(equation, ordre)+"\"");
 
 
     }
