@@ -2,7 +2,6 @@ package org.jfactory.jfactory.domain;
 
 import com.google.common.base.Preconditions;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -160,4 +159,52 @@ public class Equation {
                 .filter(v-> v.isX()==x)
                 .count();
     }
+
+    public Optional<EquationSimple> calculEquationSimplifie(int ordre){
+
+        var reste=calcul(ordre-1);
+        var rest2=reste.divide(BigInteger.TEN.pow(ordre-1)).longValueExact();
+        var tmp2=BigInteger.ZERO;
+
+        Optional<Integer> a=Optional.empty();
+        Optional<Integer> b=Optional.empty();
+
+            var add = additions.get(ordre);
+            for (var m : add.getAddition()) {
+                if (m instanceof Multiplication mult) {
+                    if (mult.getV1().isAffecte() && mult.getV2().isAffecte()) {
+                        var v1 = BigInteger.valueOf(mult.getV1().getValeur());
+                        var v2 = BigInteger.valueOf(mult.getV2().getValeur());
+                        var bi = v1.multiply(v2);
+                        tmp2 = tmp2.add(bi);
+                    } else {
+                        if(mult.getV1().isAffecte()&&!mult.getV2().isAffecte()){
+                            if(mult.getV2().isX()){
+                                Preconditions.checkState(a.isEmpty());
+                                a=Optional.of(mult.getV1().getValeur());
+                            } else {
+                                Preconditions.checkState(b.isEmpty());
+                                b=Optional.of(mult.getV1().getValeur());
+                            }
+                        } else if(!mult.getV1().isAffecte()&&mult.getV2().isAffecte()){
+                            if(mult.getV1().isX()){
+                                Preconditions.checkState(a.isEmpty());
+                                a=Optional.of(mult.getV2().getValeur());
+                            } else {
+                                Preconditions.checkState(b.isEmpty());
+                                b=Optional.of(mult.getV2().getValeur());
+                            }
+                        }
+                    }
+                } else if (m instanceof Constante cst) {
+                    tmp2 = tmp2.add(BigInteger.valueOf(cst.getValeur()));
+                } else {
+                    Assert.state(false, "operation non gere: " + m);
+                }
+            }
+
+        EquationSimple equationSimple = new EquationSimple(a,b,Optional.of(tmp2.intValueExact()),valeurs.get(ordre).getValeur(), reste,rest2);
+        return Optional.of(equationSimple);
+    }
+
 }
