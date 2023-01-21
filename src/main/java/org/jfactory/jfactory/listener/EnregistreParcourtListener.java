@@ -89,18 +89,32 @@ public class EnregistreParcourtListener implements ParcourtListener {
         map.put(COLONNE_ETAT, "1");
         map.put(COLONNE_SOLUTION, "1");
         map.put(COLONNE_CHEMIN_SOLUTION, "1");
-        int no = csv.size() - 2;
-        int ordre2 = ordre - 1;
-        for (int i = no; i > 0; i--) {
-            map = csv.get(i);
-            if (map.containsKey(COLONNE_ORDRE)) {
-                var s = map.get(COLONNE_ORDRE);
-                if (StringUtils.equals(s, ordre2 + "")) {
-                    map.put(COLONNE_CHEMIN_SOLUTION, "1");
-                    ordre2 = ordre2 - 1;
-                }
+        var noPrecedent=map.get(COLONNE_NO_PARENT);
+        while(!StringUtils.isBlank(noPrecedent)){
+            var tmp2=noPrecedent;
+            var tmp=csv.stream()
+                    .filter(x->Objects.equals(x.get(COLONNE_NO),tmp2))
+                    .findFirst();
+            if(tmp.isPresent()){
+                var map2=tmp.get();
+                map2.put(COLONNE_CHEMIN_SOLUTION, "1");
+                noPrecedent=map2.get(COLONNE_NO_PARENT);
+            } else {
+                break;
             }
         }
+//        int no = csv.size() - 2;
+//        int ordre2 = ordre - 1;
+//        for (int i = no; i > 0; i--) {
+//            map = csv.get(i);
+//            if (map.containsKey(COLONNE_ORDRE)) {
+//                var s = map.get(COLONNE_ORDRE);
+//                if (StringUtils.equals(s, ordre2 + "")) {
+//                    map.put(COLONNE_CHEMIN_SOLUTION, "1");
+//                    ordre2 = ordre2 - 1;
+//                }
+//            }
+//        }
     }
 
     private Map<String,String> getLast(){
