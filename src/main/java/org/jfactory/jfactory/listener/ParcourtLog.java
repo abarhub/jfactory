@@ -55,6 +55,11 @@ public class ParcourtLog implements ParcourtListener {
     }
 
     @Override
+    public void avantAffectation(int ordre, List<Variable> listeVariables, Doublet tmp) {
+
+    }
+
+    @Override
     public void affecte(int ordre, List<Variable> listeVariables, Doublet tmp) {
         LOGGER.atDebug().addKeyValue("ordre", ordre).setMessage("Affectation pour l'ordre {} : {}, eq={}")
                 .addArgument(ordre)

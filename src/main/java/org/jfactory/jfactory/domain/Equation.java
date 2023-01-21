@@ -174,39 +174,39 @@ public class Equation {
         Optional<Integer> a=Optional.empty();
         Optional<Integer> b=Optional.empty();
 
-            var add = additions.get(ordre);
-            for (var m : add.getAddition()) {
-                if (m instanceof Multiplication mult) {
-                    if (mult.getV1().isAffecte() && mult.getV2().isAffecte()) {
-                        var v1 = BigInteger.valueOf(mult.getV1().getValeur());
-                        var v2 = BigInteger.valueOf(mult.getV2().getValeur());
-                        var bi = v1.multiply(v2);
-                        tmp2 = tmp2.add(bi);
-                    } else {
-                        if(mult.getV1().isAffecte()&&!mult.getV2().isAffecte()){
-                            if(mult.getV2().isX()){
-                                Preconditions.checkState(a.isEmpty());
-                                a=Optional.of(mult.getV1().getValeur());
-                            } else {
-                                Preconditions.checkState(b.isEmpty());
-                                b=Optional.of(mult.getV1().getValeur());
-                            }
-                        } else if(!mult.getV1().isAffecte()&&mult.getV2().isAffecte()){
-                            if(mult.getV1().isX()){
-                                Preconditions.checkState(a.isEmpty());
-                                a=Optional.of(mult.getV2().getValeur());
-                            } else {
-                                Preconditions.checkState(b.isEmpty());
-                                b=Optional.of(mult.getV2().getValeur());
-                            }
+        var add = additions.get(ordre);
+        for (var m : add.getAddition()) {
+            if (m instanceof Multiplication mult) {
+                if (mult.getV1().isAffecte() && mult.getV2().isAffecte()) {
+                    var v1 = BigInteger.valueOf(mult.getV1().getValeur());
+                    var v2 = BigInteger.valueOf(mult.getV2().getValeur());
+                    var bi = v1.multiply(v2);
+                    tmp2 = tmp2.add(bi);
+                } else {
+                    if(mult.getV1().isAffecte()&&!mult.getV2().isAffecte()){
+                        if(mult.getV2().isX()){
+                            Preconditions.checkState(a.isEmpty());
+                            a=Optional.of(mult.getV1().getValeur());
+                        } else {
+                            Preconditions.checkState(b.isEmpty());
+                            b=Optional.of(mult.getV1().getValeur());
+                        }
+                    } else if(!mult.getV1().isAffecte()&&mult.getV2().isAffecte()){
+                        if(mult.getV1().isX()){
+                            Preconditions.checkState(a.isEmpty());
+                            a=Optional.of(mult.getV2().getValeur());
+                        } else {
+                            Preconditions.checkState(b.isEmpty());
+                            b=Optional.of(mult.getV2().getValeur());
                         }
                     }
-                } else if (m instanceof Constante cst) {
-                    tmp2 = tmp2.add(BigInteger.valueOf(cst.getValeur()));
-                } else {
-                    Assert.state(false, "operation non gere: " + m);
                 }
+            } else if (m instanceof Constante cst) {
+                tmp2 = tmp2.add(BigInteger.valueOf(cst.getValeur()));
+            } else {
+                Assert.state(false, "operation non gere: " + m);
             }
+        }
 
         EquationSimple equationSimple = new EquationSimple(a,b,Optional.of(tmp2.intValueExact()),valeurs.get(ordre).getValeur(), reste,rest2);
         return Optional.of(equationSimple);

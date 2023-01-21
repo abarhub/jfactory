@@ -139,6 +139,10 @@ public class MultiplicationService {
                     Assert.isTrue(listeVariables.size() <= tmp.size(), "listeVariables est superieur à 2 " +
                             "(size=" + listeVariables.size() + ",ordre=" + ordre + ")");
 
+                    for (var parcourt : parcourtListeners) {
+                        parcourt.avantAffectation(ordre, listeVariables, tmp);
+                    }
+
                     // affectation des variables
                     for (var i = 0; i < tmp.size() && i < listeVariables.size(); i++) {
                         var valeur = 0;

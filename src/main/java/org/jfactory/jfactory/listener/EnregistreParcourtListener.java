@@ -112,7 +112,7 @@ public class EnregistreParcourtListener implements ParcourtListener {
         this.ordre = ordre;
     }
 
-    private void enregistreLigne(int ordre, Doublet valeursSelectionnees) {
+    private void enregistreLigne(int ordre, Doublet valeursSelectionnees, List<Variable> listeVariables) {
         Map<String, String> map = new LinkedHashMap<>();
         map.put(COLONNE_ORDRE, ordre + "");
         for (int i = 0; i < equation.getNbVariable(true); i++) {
@@ -223,8 +223,13 @@ public class EnregistreParcourtListener implements ParcourtListener {
     }
 
     @Override
+    public void avantAffectation(int ordre, List<Variable> listeVariables, Doublet valeursSelectionnees) {
+        enregistreLigne(ordre, valeursSelectionnees, listeVariables);
+    }
+
+    @Override
     public void affecte(int ordre, List<Variable> listeVariables, Doublet valeursSelectionnees) {
-        enregistreLigne(ordre, valeursSelectionnees);
+
     }
 
     @Override

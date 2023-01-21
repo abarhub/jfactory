@@ -17,6 +17,8 @@ public interface ParcourtListener {
 
     void variablesAAffecter(int ordre, List<Variable> listeVariables);
 
+    void avantAffectation(int ordre, List<Variable> listeVariables, Doublet tmp);
+
     void affecte(int ordre, List<Variable> listeVariables, Doublet tmp);
 
     void desaffecte(int ordre, List<Variable> listeVariables);
