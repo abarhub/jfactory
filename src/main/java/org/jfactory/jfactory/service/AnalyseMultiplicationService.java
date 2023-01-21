@@ -1,6 +1,8 @@
 package org.jfactory.jfactory.service;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.jfactory.jfactory.domain.Addition;
 import org.jfactory.jfactory.domain.Constante;
 import org.jfactory.jfactory.domain.Equation;
@@ -13,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -62,8 +66,30 @@ public class AnalyseMultiplicationService {
 //        test1();
 //        test2();
 //        test3();
-        test4();
+//        test4();
 //        test5();
+        test6();
+    }
+
+    private void test6() {
+        try {
+            Reader in = new FileReader("analyse/complet3_sans_solution_1.csv");
+//            String[] HEADERS = { EnregistreParcourtListener.COLONNE_ORDRE,
+//                    EnregistreParcourtListener.};
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+//                    .withHeader(HEADERS)
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            for (CSVRecord record : records) {
+                String ordre = record.get(EnregistreParcourtListener.COLONNE_ORDRE);
+                String nombre = record.get(EnregistreParcourtListener.COLONNE_NOMBRE);
+
+                LOGGER.atInfo().log("ordre={},nombre={}",ordre,nombre);
+            }
+        }catch(Exception e){
+            LOGGER.atError().log("Erreur",e);
+            throw new RuntimeException("Erreur",e);
+        }
     }
 
     private void test5() {
