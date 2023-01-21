@@ -151,7 +151,7 @@ public class MultiplicationService {
                         listeVariables.get(i).setValeur(valeur);
                     }
                     for (var parcourt : parcourtListeners) {
-                        parcourt.affecte(ordre, listeVariables);
+                        parcourt.affecte(ordre, listeVariables, tmp);
                     }
 
                     // ajout du résultat si la valeur est bonne

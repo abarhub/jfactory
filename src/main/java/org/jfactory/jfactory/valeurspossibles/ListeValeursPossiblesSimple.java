@@ -17,6 +17,8 @@ public class ListeValeursPossiblesSimple implements ListeValeursPossibles {
 
     private Map<Integer, List<Doublet>> map = new HashMap<>();
 
+    private long id=1;
+
     public List<Doublet> getListeValeurPossibles(Equation equation, int ordre, List<Variable> listeVariables, Addition add) {
 
         Preconditions.checkNotNull(equation);
@@ -32,7 +34,8 @@ public class ListeValeursPossiblesSimple implements ListeValeursPossibles {
             List<Doublet> listeValeursPossibles = new ArrayList<>();
             for (var i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
-                    listeValeursPossibles.add(new Doublet(i, j));
+                    listeValeursPossibles.add(new Doublet(i, j,id));
+                    id++;
                 }
             }
             map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
@@ -40,7 +43,8 @@ public class ListeValeursPossiblesSimple implements ListeValeursPossibles {
         } else if (nbVariables == 1) {
             List<Doublet> listeValeursPossibles = new ArrayList<>();
             for (var i = 0; i < 10; i++) {
-                listeValeursPossibles.add(new Doublet(i));
+                listeValeursPossibles.add(new Doublet(i, id));
+                id++;
             }
             map.put(nbVariables, ImmutableList.copyOf(listeValeursPossibles));
             return map.get(nbVariables);

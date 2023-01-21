@@ -75,7 +75,7 @@ public class ListeValeursPossiblesPrecalcule implements ListeValeursPossibles {
                 if(!tmp.isEmpty()){
                     var v=getVar(add.getAddition().get(0));
                     if(StringUtils.startsWithIgnoreCase(v.getNom(),"y")) {
-                        tmp = tmp.stream().map(x -> new Doublet(x.getY(),x.getX())).toList();
+                        tmp = tmp.stream().map(x -> new Doublet(x.getY(),x.getX(), x.getId())).toList();
                     }
                 }
                 return tmp;
@@ -137,6 +137,7 @@ public class ListeValeursPossiblesPrecalcule implements ListeValeursPossibles {
     }
 
     protected void precalcul() {
+        long id=1;
         Map<Triplet, List<Doublet>> mapTriple = new HashMap<>();
         for (int a = 0; a < 10; a++) {
             for (int b = 0; b < 10; b++) {
@@ -147,7 +148,8 @@ public class ListeValeursPossiblesPrecalcule implements ListeValeursPossibles {
                         if (!mapTriple.containsKey(t)) {
                             mapTriple.put(t, new ArrayList<>());
                         }
-                        mapTriple.get(t).add(new Doublet(x, y));
+                        mapTriple.get(t).add(new Doublet(x, y,id));
+                        id++;
                     }
                 }
             }
@@ -160,13 +162,15 @@ public class ListeValeursPossiblesPrecalcule implements ListeValeursPossibles {
                 if (!mapDoulet.containsKey(c)) {
                     mapDoulet.put(c, new ArrayList<>());
                 }
-                mapDoulet.get(c).add(new Doublet(x, y));
+                mapDoulet.get(c).add(new Doublet(x, y, id));
+                id++;
             }
         }
 
         List<Doublet> liste = new ArrayList<>();
         for (var i = 0; i < 10; i++) {
-            liste.add(new Doublet(i));
+            liste.add(new Doublet(i, id));
+            id++;
         }
         liste = ImmutableList.copyOf(liste);
 

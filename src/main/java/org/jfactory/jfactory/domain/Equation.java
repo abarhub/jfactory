@@ -164,7 +164,11 @@ public class Equation {
     public Optional<EquationSimple> calculEquationSimplifie(int ordre){
 
         var reste=calcul(ordre-1);
-        var rest2=reste.divide(BigInteger.TEN.pow(ordre-1)).longValueExact();
+        reste=reste.max(BigInteger.ONE);
+        var rest2=0L;
+        if(ordre>0) {
+            rest2=reste.divide(BigInteger.TEN.pow(ordre - 1)).longValueExact();
+        }
         var tmp2=BigInteger.ZERO;
 
         Optional<Integer> a=Optional.empty();

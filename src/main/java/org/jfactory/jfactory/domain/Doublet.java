@@ -7,15 +7,19 @@ public class Doublet {
 
     private final int size;
 
-    public Doublet(int x, int y) {
+    private final long id;
+
+    public Doublet(int x, int y, long id) {
         this.x = x;
         this.y = y;
+        this.id = id;
         size = 2;
     }
 
-    public Doublet(int x) {
+    public Doublet(int x, long id) {
         this.x = x;
         this.y = -1;
+        this.id = id;
         size = 1;
     }
 
@@ -25,6 +29,10 @@ public class Doublet {
 
     public int getY() {
         return y;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public int size() {
