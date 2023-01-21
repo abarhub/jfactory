@@ -66,8 +66,8 @@ public class AnalyseMultiplicationService {
 //        test1();
 //        test2();
 //        test3();
-        test4();
-//        test5();
+//        test4();
+        test5();
 //        test6();
     }
 
@@ -138,7 +138,7 @@ public class AnalyseMultiplicationService {
                 Duration duree = Duration.between(debut, Instant.now());
                 LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
 
-                Path rep=Path.of("D:/temp/multiplication");
+                Path rep=Path.of("D:/temp/multiplication2");
                 Path p = rep.resolve("analyse_" + n + "_complet.csv");
                 LOGGER.atInfo().log("enregistrement dans {}", p);
                 try {
