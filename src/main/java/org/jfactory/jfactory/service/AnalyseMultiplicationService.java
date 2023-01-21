@@ -62,7 +62,68 @@ public class AnalyseMultiplicationService {
 //        test1();
 //        test2();
 //        test3();
-        test4();
+//        test4();
+        test5();
+    }
+
+    private void test5() {
+
+        int ordre,valeur;
+
+        ordre = 2;
+        valeur = 5;
+
+        try {
+            Path p0 = Path.of("files/double_primes_5.txt");
+            List<Mult> liste = parseFileMultiplication(p0, ordre, valeur);
+            String n;
+//        n = "15"; // 3*5
+//        n="9409"; // 97*97
+//        n = "115"; // 5*23
+            //n = "28741"; // 41*701
+//        n = "99400891"; // 9967*9973
+//        n = "2479541989"; //49789*49801
+//        n = "99998800003591"; //9999937 * 9999943
+            for (var mult : liste) {
+
+                n = mult.n + "";
+
+                var multiplicationService = new MultiplicationService();
+
+                var eq = multiplicationService.generationEquation(n);
+
+                LOGGER.info("eq={}", eq);
+
+                EnregistreParcourtListener parcourtListener = new EnregistreParcourtListener(eq);
+                multiplicationService.ajouteListener(parcourtListener);
+
+                if (true) {
+                    multiplicationService.ajouteListener(new ParcourtLog(eq));
+                }
+
+                if (true) {
+                    multiplicationService.setListeValeursPossibles(new ListeValeursPossiblesPrecalcule());
+                }
+
+                Instant debut = Instant.now();
+
+                multiplicationService.resolution(eq);
+
+                Duration duree = Duration.between(debut, Instant.now());
+                LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
+
+                Path rep=Path.of("D:/temp/multiplication");
+                Path p = rep.resolve("analyse_" + n + "_complet.csv");
+                LOGGER.atInfo().log("enregistrement dans {}", p);
+                try {
+                    parcourtListener.writerFile(p);
+                } catch (IOException e) {
+                    LOGGER.atError().log("Erreur pour ecrire le fichier {}", p, e);
+                }
+            }
+        }catch (Exception e){
+            LOGGER.atError().log("Erreur",e);
+        }
     }
 
     private void test4() {
