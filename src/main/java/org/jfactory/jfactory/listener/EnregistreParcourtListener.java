@@ -115,22 +115,8 @@ public class EnregistreParcourtListener implements ParcourtListener {
     private void enregistreLigne(int ordre, Doublet valeursSelectionnees, List<Variable> listeVariables) {
         Map<String, String> map = new LinkedHashMap<>();
         map.put(COLONNE_ORDRE, ordre + "");
-        for (int i = 0; i < equation.getNbVariable(true); i++) {
-            var v = equation.getVariable(true, i).get();
-            if (v.isAffecte()) {
-                map.put(v.getNom(), v.getValeur() + "");
-            } else {
-                map.put(v.getNom(), "");
-            }
-        }
-        for (int i = 0; i < equation.getNbVariable(false); i++) {
-            var v = equation.getVariable(false, i).get();
-            if (v.isAffecte()) {
-                map.put(v.getNom(), v.getValeur() + "");
-            } else {
-                map.put(v.getNom(), "");
-            }
-        }
+        affectVariable(true, map, listeVariables, valeursSelectionnees);
+        affectVariable(false, map, listeVariables, valeursSelectionnees);
         map.put(COLONNE_ETAT, "0");
         map.put(COLONNE_SOLUTION, "0");
         map.put(COLONNE_CHEMIN_SOLUTION, "0");
@@ -180,6 +166,30 @@ public class EnregistreParcourtListener implements ParcourtListener {
         map.put(COLONNE_A2, (valeursSelectionnees.getX()>=0)?valeursSelectionnees.getX()+"":"");
         map.put(COLONNE_B2, (valeursSelectionnees.getY()>=0)?valeursSelectionnees.getY()+"":"");
 
+    }
+
+    private void affectVariable(boolean x, Map<String, String> map, List<Variable> listeVariables, Doublet valeursSelectionnees) {
+        for (int i = 0; i < equation.getNbVariable(x); i++) {
+            var v = equation.getVariable(x, i).get();
+            var tmp=listeVariables.stream()
+                    .filter(v2-> Objects.equals(v2.getNom(),v.getNom()))
+                    .findFirst();
+            if(tmp.isPresent()){
+                var tmp2=tmp.get();
+                if(tmp2.isX()) {
+                    map.put(v.getNom(), valeursSelectionnees.getX() + "");
+                } else {
+                    map.put(v.getNom(), valeursSelectionnees.getY() + "");
+                }
+            } else {
+                if (v.isAffecte()) {
+                    map.put(v.getNom(), v.getValeur() + "");
+                } else {
+
+                    map.put(v.getNom(), "");
+                }
+            }
+        }
     }
 
     private BigInteger getVariable(boolean x) {
