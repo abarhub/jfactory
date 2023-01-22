@@ -32,9 +32,9 @@ public class AppRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         int methode;
 //        methode=1;
-//        methode=2;
+        methode=2;
 //        methode=3;
-        methode=4;
+//        methode=4;
         if(methode==1) {
             resolution();
         } else if(methode==2) {
@@ -73,10 +73,14 @@ public class AppRunner implements ApplicationRunner {
         n = "2479541989"; //49789*49801
 //        n = "99998800003591"; //9999937 * 9999943
 
+        String dureeLimite=null;
+
+        dureeLimite="60s";
 
         Instant debut = Instant.now();
 
-        resolutionCsp.resolution(n);
+        resolutionCsp.resolution(n, dureeLimite);
+//        resolutionCsp.resolutionParallel(n,5);
 
         Duration duree = Duration.between(debut, Instant.now());
         LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);

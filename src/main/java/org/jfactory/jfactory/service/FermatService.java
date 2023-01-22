@@ -39,25 +39,33 @@ public class FermatService {
 
         Optional<Pair> res = Optional.empty();
         final BigInteger max = n.add(BigInteger.ONE);
-        for (BigInteger i = BigInteger.ONE; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
+        for (BigInteger i = BigInteger.ZERO; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
             var a = tmp.add(i);
             var tmp2 = a.pow(2).subtract(n);
 
-            var tmp3 = racineCaree(tmp2);
-            if (!tmp3.equals(BigInteger.ZERO)) {
-                var b = tmp3;
-                var tmp4 = a.add(b);
-                var tmp5 = a.subtract(b);
-                if (BigInteger.ONE.equals(tmp4) || BigInteger.ONE.equals(tmp5)) {
-                    LOGGER.atInfo().log("solution triviale: {}={}*{} (ignorée)", n, tmp4, tmp5);
-                } else {
-                    LOGGER.info("trouve: {}= {} * {}", n, tmp4, tmp5);
-                    if (tmp4.compareTo(tmp5) <= 0) {
-                        res = Optional.of(new Pair(tmp4, tmp5));
+            if(tmp2.compareTo(BigInteger.ZERO)<0) {
+                // tmp2 <0 => on passe au suivant
+            } else if(tmp2.equals(BigInteger.ZERO)){
+                // trouvé => n est un carré
+                res = Optional.of(new Pair(a, a));
+                break;
+            } else {
+                var tmp3 = racineCaree(tmp2);
+                if (!tmp3.equals(BigInteger.ZERO)) {
+                    var b = tmp3;
+                    var tmp4 = a.add(b);
+                    var tmp5 = a.subtract(b);
+                    if (BigInteger.ONE.equals(tmp4) || BigInteger.ONE.equals(tmp5)) {
+                        LOGGER.atInfo().log("solution triviale: {}={}*{} (ignorée)", n, tmp4, tmp5);
                     } else {
-                        res = Optional.of(new Pair(tmp5, tmp4));
+                        LOGGER.info("trouve: {}= {} * {}", n, tmp4, tmp5);
+                        if (tmp4.compareTo(tmp5) <= 0) {
+                            res = Optional.of(new Pair(tmp4, tmp5));
+                        } else {
+                            res = Optional.of(new Pair(tmp5, tmp4));
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -79,6 +87,9 @@ public class FermatService {
             if (!TERMINAISON_CARRE.contains(tmp)) {
                 return BigInteger.ZERO;
             }
+        }
+        if(carre.compareTo(BigInteger.ZERO)<0){
+            return BigInteger.ZERO;
         }
         var racineCarre = carre.sqrt();
         if (racineCarre.multiply(racineCarre).equals(carre)) {
