@@ -1,12 +1,16 @@
 package org.jfactory.jfactory.service;
 
 import org.jfactory.jfactory.domain.Pair;
+import org.jfactory.jfactory.iterator.BigIntegerIterator;
+import org.jfactory.jfactory.iterator.CarreIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FermatService {
 
@@ -19,6 +23,8 @@ public class FermatService {
             BigInteger.valueOf(56), BigInteger.valueOf(61), BigInteger.valueOf(64), BigInteger.valueOf(69),
             BigInteger.valueOf(76), BigInteger.valueOf(81), BigInteger.valueOf(84), BigInteger.valueOf(89),
             BigInteger.valueOf(96));
+
+    private Set<Integer> set=TERMINAISON_CARRE.stream().map(x->x.intValueExact()).collect(Collectors.toSet());
 
     private static final BigInteger BI_100 = BigInteger.valueOf(100);
 
@@ -39,8 +45,13 @@ public class FermatService {
 
         Optional<Pair> res = Optional.empty();
         final BigInteger max = n.add(BigInteger.ONE);
-        for (BigInteger i = BigInteger.ZERO; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
-            var a = tmp.add(i);
+        Iterator<BigInteger> iter;
+        iter=new BigIntegerIterator(tmp,max);
+//        iter=new CarreIterator(tmp,max);
+        //for (BigInteger i = BigInteger.ZERO; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
+//            var a = tmp.add(i);
+        while(iter.hasNext()){
+            var a=iter.next();
             var tmp2 = a.pow(2).subtract(n);
 
             if(tmp2.compareTo(BigInteger.ZERO)<0) {
@@ -83,20 +94,64 @@ public class FermatService {
      */
     private BigInteger racineCaree(BigInteger carre) {
         if (OPTIMISE_VERIFICATION_CARRE) {
-            var tmp = carre.mod(BI_100);
-            if (!TERMINAISON_CARRE.contains(tmp)) {
+            if(true){// plus lent que sans optimisation (15s)
+                var tmp = carre.mod(BI_100);
+//            if (!TERMINAISON_CARRE.contains(tmp)) {
+//                return BigInteger.ZERO;
+//            }
+                if (!set.contains(tmp.intValue())) {
+                    return BigInteger.ZERO;
+                }
+            } else if(false){ // plus lente que le if précédent (22s)
+                var s=carre.toString();
+                int tmp;
+                if(s.length()>2) {
+                    tmp = Integer.parseInt(s.substring(s.length() - 2));
+                } else {
+                    tmp=Integer.parseInt(s);
+                }
+                if (!set.contains(tmp)) {
+                    return BigInteger.ZERO;
+                }
+            } else {// beaucoupl plus lent (>plusieurs minutes)
+                var tmp = carre.longValue();
+                if (!set.contains((int)tmp%100)) {
+                    return BigInteger.ZERO;
+                }
+            }
+
+        }
+        BigInteger racineCarre;
+        if(true) {// le plus rapide
+            racineCarre = carre.sqrt();
+        } else if(false) {// plus lent
+            racineCarre=sqrt(carre);
+        } else if(false){// plus lent
+            var tmp2=carre.sqrtAndRemainder();
+            if(tmp2[1].equals(BigInteger.ZERO)){
+                return tmp2[0];
+            } else {
                 return BigInteger.ZERO;
             }
         }
-        if(carre.compareTo(BigInteger.ZERO)<0){
-            return BigInteger.ZERO;
-        }
-        var racineCarre = carre.sqrt();
         if (racineCarre.multiply(racineCarre).equals(carre)) {
             return racineCarre;
         } else {
             return BigInteger.ZERO;
         }
+    }
+
+    public static BigInteger sqrt(BigInteger n) {
+        BigInteger a = BigInteger.ONE;
+        BigInteger b = n.shiftRight(1).add(new BigInteger("2")); // (n >> 1) + 2 (ensure 0 doesn't show up)
+        while (b.compareTo(a) >= 0) {
+            BigInteger mid = a.add(b).shiftRight(1); // (a+b) >> 1
+            if (mid.multiply(mid).compareTo(n) > 0)
+                b = mid.subtract(BigInteger.ONE);
+            else
+                a = mid.add(BigInteger.ONE);
+        }
+        return a.subtract(BigInteger.ONE);
     }
 
 }

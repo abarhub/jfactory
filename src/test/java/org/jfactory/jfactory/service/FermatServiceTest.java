@@ -1,5 +1,6 @@
 package org.jfactory.jfactory.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -92,6 +93,27 @@ class FermatServiceTest {
                 ()->assertTrue(res.isPresent()),
                 ()->assertEquals(a, res.get().a()),
                 ()->assertEquals(b, res.get().b()));
+    }
+
+    @Test
+    void test1(){
+        var n=new BigInteger("859139077199680238479671925831",10);
+
+        var n100=BigInteger.valueOf(100);
+
+        LOGGER.atInfo().log("debut");
+
+        var res=n.mod(n100);
+
+        LOGGER.atInfo().log("fin");
+
+
+        LOGGER.atInfo().log("debut2");
+
+        var s=n.toString();
+        var res2= Integer.parseInt(s.substring(s.length()-2));
+
+        LOGGER.atInfo().log("fin");
     }
 
     private static BigInteger bi(long n){
