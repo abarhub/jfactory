@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -67,8 +68,50 @@ public class AnalyseMultiplicationService {
 //        test2();
 //        test3();
 //        test4();
-        test5();
+//        test5();
 //        test6();
+        test7();
+    }
+
+    private void test7() {
+        try {
+            Path p0 = Path.of("files/double_primes_5.txt");
+            Path p1 = Path.of("analyse/analyse_double_primes_5_fermat.csv");
+            List<Mult> liste = parseFileMultiplication(p0);
+
+            var fermatService = new FermatService();
+
+            var str = new StringBuilder();
+            str.append("n;x;y;a;b\n");
+
+            long nb = 0;
+            for (var mult : liste) {
+
+                var n = BigInteger.valueOf(mult.n);
+                var resOpt = fermatService.factorisationDetail(n);
+                if (resOpt.isPresent()) {
+                    var res = resOpt.get();
+                    var x = res.x();
+                    var y = res.y();
+                    var a = res.a();
+                    var b = res.b();
+                    LOGGER.atInfo().log("n={},x={},y={},a={},b={}", n, x, y, a, b);
+                    str.append("%s;%s;%s;%s;%s\n".formatted(n, x, y, a, b));
+                }
+
+                nb++;
+
+            }
+
+            LOGGER.atInfo().log("nb={}", nb);
+
+            Files.writeString(p1, str.toString());
+
+            LOGGER.atInfo().log("fichier {} ecrit", p1);
+
+        } catch (Exception e) {
+            LOGGER.atError().log("Erreur", e);
+        }
     }
 
     private void test6() {
@@ -84,17 +127,17 @@ public class AnalyseMultiplicationService {
                 String ordre = record.get(EnregistreParcourtListener.COLONNE_ORDRE);
                 String nombre = record.get(EnregistreParcourtListener.COLONNE_NOMBRE);
 
-                LOGGER.atInfo().log("ordre={},nombre={}",ordre,nombre);
+                LOGGER.atInfo().log("ordre={},nombre={}", ordre, nombre);
             }
-        }catch(Exception e){
-            LOGGER.atError().log("Erreur",e);
-            throw new RuntimeException("Erreur",e);
+        } catch (Exception e) {
+            LOGGER.atError().log("Erreur", e);
+            throw new RuntimeException("Erreur", e);
         }
     }
 
     private void test5() {
 
-        int ordre,valeur;
+        int ordre, valeur;
 
         ordre = 2;
         valeur = 5;
@@ -138,7 +181,7 @@ public class AnalyseMultiplicationService {
                 Duration duree = Duration.between(debut, Instant.now());
                 LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
 
-                Path rep=Path.of("D:/temp/multiplication2");
+                Path rep = Path.of("D:/temp/multiplication2");
                 Path p = rep.resolve("analyse_" + n + "_complet.csv");
                 LOGGER.atInfo().log("enregistrement dans {}", p);
                 try {
@@ -147,8 +190,8 @@ public class AnalyseMultiplicationService {
                     LOGGER.atError().log("Erreur pour ecrire le fichier {}", p, e);
                 }
             }
-        }catch (Exception e){
-            LOGGER.atError().log("Erreur",e);
+        } catch (Exception e) {
+            LOGGER.atError().log("Erreur", e);
         }
     }
 
@@ -164,20 +207,20 @@ public class AnalyseMultiplicationService {
 //        n = "2479541989"; //49789*49801
 //        n = "99998800003591"; //9999937 * 9999943
 
-        var multiplicationService=new MultiplicationService();
+        var multiplicationService = new MultiplicationService();
 
         var eq = multiplicationService.generationEquation(n);
 
         LOGGER.info("eq={}", eq);
 
-        EnregistreParcourtListener parcourtListener=new EnregistreParcourtListener(eq);
+        EnregistreParcourtListener parcourtListener = new EnregistreParcourtListener(eq);
         multiplicationService.ajouteListener(parcourtListener);
 
         if (true) {
             multiplicationService.ajouteListener(new ParcourtLog(eq));
         }
 
-        if(true){
+        if (true) {
             multiplicationService.setListeValeursPossibles(new ListeValeursPossiblesPrecalcule());
         }
 
@@ -189,11 +232,11 @@ public class AnalyseMultiplicationService {
         LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
 
         Path p = Path.of("analyse/analyse_" + n + "_complet.csv");
-        LOGGER.atInfo().log("enregistrement dans {}",p);
+        LOGGER.atInfo().log("enregistrement dans {}", p);
         try {
             parcourtListener.writerFile(p);
-        }catch (IOException e){
-            LOGGER.atError().log("Erreur pour ecrire le fichier {}",p,e);
+        } catch (IOException e) {
+            LOGGER.atError().log("Erreur pour ecrire le fichier {}", p, e);
         }
     }
 
@@ -233,7 +276,7 @@ public class AnalyseMultiplicationService {
                     } else {
                         map2.put(n, 1L);
                     }
-                    if(n>1){
+                    if (n > 1) {
                         if (map3.containsKey(n)) {
                             map3.get(n).addAll(tmp3.getValue().equationList());
                         } else {
@@ -243,10 +286,10 @@ public class AnalyseMultiplicationService {
                 }
             }
 
-            var iter=map3.entrySet().iterator();
-            while(iter.hasNext()){
-                var tmp5=iter.next();
-                if(map2.get(tmp5.getKey())<4){
+            var iter = map3.entrySet().iterator();
+            while (iter.hasNext()) {
+                var tmp5 = iter.next();
+                if (map2.get(tmp5.getKey()) < 4) {
                     iter.remove();
                 }
             }
@@ -255,10 +298,10 @@ public class AnalyseMultiplicationService {
 
             LOGGER.atInfo().log("map3={}", map3);
 
-            LOGGER.atInfo().log("map3 ={}", map3.entrySet().stream().filter(x->x.getValue().size()<4).collect(Collectors.toList()));
+            LOGGER.atInfo().log("map3 ={}", map3.entrySet().stream().filter(x -> x.getValue().size() < 4).collect(Collectors.toList()));
 
-            for(var tmp:map3.entrySet()) {
-                LOGGER.atInfo().log("map3({})={}", tmp.getKey(),tmp.getValue());
+            for (var tmp : map3.entrySet()) {
+                LOGGER.atInfo().log("map3({})={}", tmp.getKey(), tmp.getValue());
             }
 
         } catch (Exception e) {
@@ -522,6 +565,24 @@ public class AnalyseMultiplicationService {
         } catch (Exception e) {
             LOGGER.atError().log("Erreur", e);
         }
+    }
+
+    private List<Mult> parseFileMultiplication(Path p) throws IOException {
+        var liste = Files.lines(p)
+                .map(x -> {
+                    var tmp = x.split("=");
+                    var n = tmp[1];
+                    var tmp2 = tmp[0].split("\\*");
+                    var a = tmp2[0];
+                    var b = tmp2[1];
+                    var n0 = Long.parseLong(n, 10);
+                    var a0 = Long.parseLong(a, 10);
+                    var b0 = Long.parseLong(b, 10);
+                    return new Mult(a0, b0, n0);
+                })
+                .filter(x -> x.n >= 1000)
+                .collect(Collectors.toList());
+        return liste;
     }
 
     private List<Mult> parseFileMultiplication(Path p, int ordre, int valeur) throws IOException {

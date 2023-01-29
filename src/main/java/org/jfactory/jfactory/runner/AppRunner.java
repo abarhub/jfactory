@@ -32,9 +32,9 @@ public class AppRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         int methode;
 //        methode=1;
-        methode=2;
+//        methode=2;
 //        methode=3;
-//        methode=4;
+        methode=4;
         if(methode==1) {
             resolution();
         } else if(methode==2) {

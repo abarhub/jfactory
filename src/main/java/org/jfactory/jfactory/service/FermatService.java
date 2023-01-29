@@ -1,8 +1,8 @@
 package org.jfactory.jfactory.service;
 
 import org.jfactory.jfactory.domain.Pair;
+import org.jfactory.jfactory.domain.ResultatFermat;
 import org.jfactory.jfactory.iterator.BigIntegerIterator;
-import org.jfactory.jfactory.iterator.CarreIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class FermatService {
             BigInteger.valueOf(76), BigInteger.valueOf(81), BigInteger.valueOf(84), BigInteger.valueOf(89),
             BigInteger.valueOf(96));
 
-    private Set<Integer> set=TERMINAISON_CARRE.stream().map(x->x.intValueExact()).collect(Collectors.toSet());
+    private Set<Integer> set = TERMINAISON_CARRE.stream().map(x -> x.intValueExact()).collect(Collectors.toSet());
 
     private static final BigInteger BI_100 = BigInteger.valueOf(100);
 
@@ -46,17 +46,17 @@ public class FermatService {
         Optional<Pair> res = Optional.empty();
         final BigInteger max = n.add(BigInteger.ONE);
         Iterator<BigInteger> iter;
-        iter=new BigIntegerIterator(tmp,max);
+        iter = new BigIntegerIterator(tmp, max);
 //        iter=new CarreIterator(tmp,max);
         //for (BigInteger i = BigInteger.ZERO; i.compareTo(max) <= 0; i = i.add(BigInteger.ONE)) {
 //            var a = tmp.add(i);
-        while(iter.hasNext()){
-            var a=iter.next();
+        while (iter.hasNext()) {
+            var a = iter.next();
             var tmp2 = a.pow(2).subtract(n);
 
-            if(tmp2.compareTo(BigInteger.ZERO)<0) {
+            if (tmp2.compareTo(BigInteger.ZERO) < 0) {
                 // tmp2 <0 => on passe au suivant
-            } else if(tmp2.equals(BigInteger.ZERO)){
+            } else if (tmp2.equals(BigInteger.ZERO)) {
                 // trouvé => n est un carré
                 res = Optional.of(new Pair(a, a));
                 break;
@@ -87,6 +87,56 @@ public class FermatService {
     }
 
     /**
+     * Factorise en utilisant la methode de Fermat
+     * n = x*y = (a+b) * (a-b) = a^2 - b^2
+     *
+     * @param n le nombre à factoriser
+     * @return Le détail de la factorisation
+     */
+    public Optional<ResultatFermat> factorisationDetail(BigInteger n) {
+        var tmp = n.sqrt();
+
+        Optional<ResultatFermat> res = Optional.empty();
+        final BigInteger max = n.add(BigInteger.ONE);
+        Iterator<BigInteger> iter;
+        iter = new BigIntegerIterator(tmp, max);
+        while (iter.hasNext()) {
+            var a = iter.next();
+            var tmp2 = a.pow(2).subtract(n);
+
+            if (tmp2.compareTo(BigInteger.ZERO) < 0) {
+                // tmp2 <0 => on passe au suivant
+            } else if (tmp2.equals(BigInteger.ZERO)) {
+                // trouvé => n est un carré
+                res = Optional.of(new ResultatFermat(a, a, a, BigInteger.ZERO));
+                break;
+            } else {
+                var tmp3 = racineCaree(tmp2);
+                if (!tmp3.equals(BigInteger.ZERO)) {
+                    var b = tmp3;
+                    var tmp4 = a.add(b);
+                    var tmp5 = a.subtract(b);
+                    if (BigInteger.ONE.equals(tmp4) || BigInteger.ONE.equals(tmp5)) {
+                        LOGGER.atInfo().log("solution triviale: {}={}*{} (ignorée)", n, tmp4, tmp5);
+                    } else {
+                        LOGGER.info("trouve: {}= {} * {}", n, tmp4, tmp5);
+                        if (tmp4.compareTo(tmp5) <= 0) {
+                            res = Optional.of(new ResultatFermat(tmp4, tmp5, a, b));
+                        } else {
+                            res = Optional.of(new ResultatFermat(tmp5, tmp4, a, b));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (res.isEmpty()) {
+            LOGGER.info("pas trouve pour {}", n);
+        }
+        return res;
+    }
+
+    /**
      * Retourne la racine carrée du nombre ou 0 si la racine carée n'est pas entiere
      *
      * @param carre Le carré ou il faut prendre la racine carré
@@ -94,7 +144,7 @@ public class FermatService {
      */
     private BigInteger racineCaree(BigInteger carre) {
         if (OPTIMISE_VERIFICATION_CARRE) {
-            if(true){// plus lent que sans optimisation (15s)
+            if (true) {// plus lent que sans optimisation (15s)
                 var tmp = carre.mod(BI_100);
 //            if (!TERMINAISON_CARRE.contains(tmp)) {
 //                return BigInteger.ZERO;
@@ -102,33 +152,33 @@ public class FermatService {
                 if (!set.contains(tmp.intValue())) {
                     return BigInteger.ZERO;
                 }
-            } else if(false){ // plus lente que le if précédent (22s)
-                var s=carre.toString();
+            } else if (false) { // plus lente que le if précédent (22s)
+                var s = carre.toString();
                 int tmp;
-                if(s.length()>2) {
+                if (s.length() > 2) {
                     tmp = Integer.parseInt(s.substring(s.length() - 2));
                 } else {
-                    tmp=Integer.parseInt(s);
+                    tmp = Integer.parseInt(s);
                 }
                 if (!set.contains(tmp)) {
                     return BigInteger.ZERO;
                 }
             } else {// beaucoupl plus lent (>plusieurs minutes)
                 var tmp = carre.longValue();
-                if (!set.contains((int)tmp%100)) {
+                if (!set.contains((int) tmp % 100)) {
                     return BigInteger.ZERO;
                 }
             }
 
         }
         BigInteger racineCarre;
-        if(true) {// le plus rapide
+        if (true) {// le plus rapide
             racineCarre = carre.sqrt();
-        } else if(false) {// plus lent
-            racineCarre=sqrt(carre);
-        } else if(false){// plus lent
-            var tmp2=carre.sqrtAndRemainder();
-            if(tmp2[1].equals(BigInteger.ZERO)){
+        } else if (false) {// plus lent
+            racineCarre = sqrt(carre);
+        } else if (false) {// plus lent
+            var tmp2 = carre.sqrtAndRemainder();
+            if (tmp2[1].equals(BigInteger.ZERO)) {
                 return tmp2[0];
             } else {
                 return BigInteger.ZERO;
