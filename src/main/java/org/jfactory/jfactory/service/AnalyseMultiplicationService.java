@@ -67,10 +67,10 @@ public class AnalyseMultiplicationService {
 //        test1();
 //        test2();
 //        test3();
-//        test4();
+        test4();
 //        test5();
 //        test6();
-        test7();
+//        test7();
     }
 
     private void test7() {
@@ -202,8 +202,8 @@ public class AnalyseMultiplicationService {
 //        n = "15"; // 3*5
 //        n="9409"; // 97*97
 //        n = "115"; // 5*23
-        n = "28741"; // 41*701
-//        n = "99400891"; // 9967*9973
+//        n = "28741"; // 41*701
+        n = "99400891"; // 9967*9973
 //        n = "2479541989"; //49789*49801
 //        n = "99998800003591"; //9999937 * 9999943
 
@@ -213,14 +213,17 @@ public class AnalyseMultiplicationService {
 
         LOGGER.info("eq={}", eq);
 
-        EnregistreParcourtListener parcourtListener = new EnregistreParcourtListener(eq);
-        multiplicationService.ajouteListener(parcourtListener);
+        EnregistreParcourtListener parcourtListener=null;
+        if(false) {
+            parcourtListener = new EnregistreParcourtListener(eq);
+            multiplicationService.ajouteListener(parcourtListener);
+        }
 
         if (true) {
             multiplicationService.ajouteListener(new ParcourtLog(eq));
         }
 
-        if (true) {
+        if (false) {
             multiplicationService.setListeValeursPossibles(new ListeValeursPossiblesPrecalcule());
         }
 
@@ -229,14 +232,16 @@ public class AnalyseMultiplicationService {
         multiplicationService.resolution(eq);
 
         Duration duree = Duration.between(debut, Instant.now());
-        LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{})", duree);
+        LOGGER.atInfo().addKeyValue("duree", duree).log("fin (duree:{}; duree2={})", duree,eq.getDuration());
 
-        Path p = Path.of("analyse/analyse_" + n + "_complet.csv");
-        LOGGER.atInfo().log("enregistrement dans {}", p);
-        try {
-            parcourtListener.writerFile(p);
-        } catch (IOException e) {
-            LOGGER.atError().log("Erreur pour ecrire le fichier {}", p, e);
+        if(false) {
+            Path p = Path.of("analyse/analyse_" + n + "_complet.csv");
+            LOGGER.atInfo().log("enregistrement dans {}", p);
+            try {
+                parcourtListener.writerFile(p);
+            } catch (IOException e) {
+                LOGGER.atError().log("Erreur pour ecrire le fichier {}", p, e);
+            }
         }
     }
 

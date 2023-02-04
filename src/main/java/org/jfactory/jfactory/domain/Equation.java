@@ -4,10 +4,13 @@ import com.google.common.base.Preconditions;
 import org.springframework.util.Assert;
 
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Equation {
@@ -19,6 +22,10 @@ public class Equation {
     private final BigInteger valeurBi;
 
     private final List<Variable> listeVariables;
+
+    private Duration dureeEstValide=Duration.ZERO;
+
+    private long nbEstValide=0;
 
     public Equation(List<Addition> additions, String valeur, List<Constante> valeurs) {
         this.additions = List.copyOf(additions);
@@ -69,6 +76,7 @@ public class Equation {
     }
 
     public BigInteger calcul(int ordre) {
+        var debut= Instant.now();
         var res = BigInteger.ZERO;
 
         for (var i = 0; ((ordre > -1 && i <= ordre) || (ordre == -1) && i < additions.size()); i++) {
@@ -90,6 +98,10 @@ public class Equation {
                 }
             }
         }
+
+        var duree= Duration.between(debut,Instant.now());
+        dureeEstValide=dureeEstValide.plus(duree);
+        nbEstValide++;
 
         return res;
     }
@@ -223,6 +235,10 @@ public class Equation {
                     .map(Addition::toString2)
                     .collect(Collectors.joining(","));
         }
+    }
+
+    public String getDuration(){
+        return ""+(dureeEstValide.getSeconds()/nbEstValide)+"s (nb="+nbEstValide+")";
     }
 
 }
