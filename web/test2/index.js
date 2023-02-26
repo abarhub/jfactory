@@ -51,14 +51,15 @@ function construitCases(x, y) {
                 var v = nx * ny;
                 var v1 = v % 10;
                 var v2 = (v - v1) / 10;
-                createInput(name_4, name_4, "" + v1, tmp, 'case-intermediaire');
+                // createInput(name, name, "" + v1, tmp, 'case-intermediaire');
+                createInput(name_4, name_4, "", tmp, 'case-intermediaire');
                 if (v2 > 0) {
                     var eltRet = document.getElementsByName('r' + (i + j + 2));
                     if (eltRet.length > 0) {
-                        var v3 = eltRet[0].getAttribute('value');
+                        var v3 = eltRet[0].value;
                         var n = parseInt(v3);
                         n += v2;
-                        eltRet[0].setAttribute('value', '' + n);
+                        // (eltRet[0] as HTMLInputElement).value= '' + n;
                     }
                 }
             }
@@ -77,6 +78,101 @@ function construitCases(x, y) {
             var name_5 = "z" + (i + 1);
             createInput(name_5, name_5, "", eltResultat, 'case-resultat');
         }
+        recalcul();
+    }
+}
+function recalcul() {
+    var newEltx = document.getElementById('xValeur');
+    var newElty = document.getElementById('yValeur');
+    if (newEltx && newElty) {
+        var tailleX = newEltx.childNodes.length;
+        var tailleY = newElty.childNodes.length;
+        var tab = [];
+        var valeursIntermedaire = [];
+        var reste = [];
+        var resultat = [];
+        for (var j = 0; j < tailleY; j++) {
+            for (var i = tailleX - 1; i >= 0; i--) {
+                var name_6 = "x" + (i + 1) + "*y" + (j + 1);
+                var eltx = document.getElementsByName("x" + (i + 1));
+                var elty = document.getElementsByName("y" + (j + 1));
+                if (eltx && eltx.length > 0 && elty && elty.length > 0) {
+                    var valx = eltx[0].value;
+                    var valy = elty[0].value;
+                    if (valx && valx.length > 0 && valy && valy.length > 0) {
+                        var nx = parseInt(valx);
+                        var ny = parseInt(valy);
+                        var v = nx * ny;
+                        var v1 = v % 10;
+                        var v2 = (v - v1) / 10;
+                        var eltInterm = document.getElementsByName(name_6);
+                        var colonne = i + j;
+                        var ligne = j;
+                        if (eltInterm && eltInterm.length > 0) {
+                            eltInterm[0].setAttribute('value', '' + v1);
+                        }
+                        while (valeursIntermedaire.length <= colonne) {
+                            valeursIntermedaire.push([]);
+                        }
+                        var colonneTab = valeursIntermedaire[colonne];
+                        while (colonneTab.length <= ligne) {
+                            colonneTab.push(0);
+                        }
+                        colonneTab[ligne] = v;
+                        while (reste.length <= colonne + 1) {
+                            reste.push(0);
+                        }
+                        var pos = i + j;
+                        while (pos >= tab.length) {
+                            tab.push(0);
+                        }
+                        tab[pos] = tab[pos] + v1;
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < valeursIntermedaire.length; i++) {
+            var val = 0;
+            for (var j = 0; j < valeursIntermedaire[i].length; j++) {
+                val += valeursIntermedaire[i][j];
+            }
+            while (reste.length <= i + 1) {
+                reste.push(0);
+            }
+            val += reste[i];
+            while (i >= resultat.length) {
+                resultat.push(0);
+            }
+            var v1 = val % 10;
+            var v2 = Math.floor(val / 10);
+            resultat[i] = v1;
+            reste[i + 1] = v2;
+        }
+        var eltReste = document.getElementById('retenues');
+        if (eltReste) {
+            for (var i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
+                var name_7 = "r" + (i + 1);
+                var eltRes = document.getElementsByName(name_7);
+                if (eltRes && eltRes.length > 0) {
+                    var v1 = reste[i];
+                    eltRes[0].value = '' + v1;
+                }
+            }
+        }
+        var eltResultat = document.getElementById('resultat');
+        if (eltResultat) {
+            for (var i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
+                var name_8 = "z" + (i + 1);
+                var eltRes = document.getElementsByName(name_8);
+                if (eltRes && eltRes.length > 0) {
+                    var v1 = resultat[i];
+                    eltRes[0].value = '' + v1;
+                }
+            }
+        }
+        console.log("valeurs intermediaires:", valeursIntermedaire);
+        console.log("reste:", reste);
+        console.log("resultat:", resultat);
     }
 }
 // const buttonMulti = document.getElementById('multiOk');
@@ -123,6 +219,10 @@ buttonFact === null || buttonFact === void 0 ? void 0 : buttonFact.addEventListe
     //     const modal = new Modal(element);
     //     modal.hide()
     // }
+});
+var buttonRecalcul = document.getElementById('recalcul');
+buttonRecalcul === null || buttonRecalcul === void 0 ? void 0 : buttonRecalcul.addEventListener('click', function handleClick(event) {
+    recalcul();
 });
 var x = '';
 var y = '';
