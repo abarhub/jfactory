@@ -128,13 +128,13 @@ function recalcul() {
 
                 const name = "x" + (i + 1) + "*y" + (j + 1);
 
-                const eltx=document.getElementsByName("x" + (i + 1));
-                const elty=document.getElementsByName("y" + (j + 1));
+                const eltx = document.getElementsByName("x" + (i + 1));
+                const elty = document.getElementsByName("y" + (j + 1));
 
-                if(eltx&&eltx.length>0&&elty&&elty.length>0) {
-                    const valx=(eltx[0] as HTMLInputElement).value;
-                    const valy=(elty[0] as HTMLInputElement).value;
-                    if(valx&&valx.length>0&&valy&&valy.length>0) {
+                if (eltx && eltx.length > 0 && elty && elty.length > 0) {
+                    const valx = (eltx[0] as HTMLInputElement).value;
+                    const valy = (elty[0] as HTMLInputElement).value;
+                    if (valx && valx.length > 0 && valy && valy.length > 0) {
                         const nx = parseInt(valx);
                         const ny = parseInt(valy);
                         const v = nx * ny;
@@ -175,7 +175,7 @@ function recalcul() {
             for (let j = 0; j < valeursIntermedaire[i].length; j++) {
                 val += valeursIntermedaire[i][j];
             }
-            while(reste.length<=i+1) {
+            while (reste.length <= i + 1) {
                 reste.push(0);
 
             }
@@ -183,10 +183,10 @@ function recalcul() {
             while (i >= resultat.length) {
                 resultat.push(0);
             }
-            let v1=val%10;
-            let v2=Math.floor(val/10);
+            let v1 = val % 10;
+            let v2 = Math.floor(val / 10);
             resultat[i] = v1;
-            reste[i+1]=v2;
+            reste[i + 1] = v2;
         }
 
         const eltReste = document.getElementById('retenues');
@@ -195,8 +195,8 @@ function recalcul() {
                 const name = "r" + (i + 1);
                 const eltRes = document.getElementsByName(name);
                 if (eltRes && eltRes.length > 0) {
-                    const v1=reste[i];
-                    (eltRes[0] as HTMLInputElement).value= '' + v1;
+                    const v1 = reste[i];
+                    (eltRes[0] as HTMLInputElement).value = '' + v1;
                 }
             }
         }
@@ -207,8 +207,8 @@ function recalcul() {
                 const name = "z" + (i + 1);
                 const eltRes = document.getElementsByName(name);
                 if (eltRes && eltRes.length > 0) {
-                    const v1=resultat[i];
-                    (eltRes[0] as HTMLInputElement).value= '' + v1;
+                    const v1 = resultat[i];
+                    (eltRes[0] as HTMLInputElement).value = '' + v1;
                 }
             }
         }
