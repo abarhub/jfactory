@@ -1,0 +1,20 @@
+
+.case {
+    width: 50px;
+}
+
+.case-x, .case-y {
+    color: cornflowerblue;
+}
+
+.case-intermediaire {
+    color: aquamarine;
+}
+
+.case-retenues {
+    color: darkseagreen;
+}
+
+.case-resultat {
+    color: coral;
+}
