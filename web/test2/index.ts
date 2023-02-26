@@ -16,7 +16,7 @@ function createInput(name: string, placeholder: string, value: string, parent, c
     parent.appendChild(tmp2);
 }
 
-function construitCases(x: string, y: string): void {
+function construitCases(x: string, y: string, recalculResultat:boolean): void {
 
     const elt = document.getElementById('doc');
 
@@ -97,12 +97,54 @@ function construitCases(x: string, y: string): void {
             createInput(name, name, "", eltResultat, 'case-resultat', name);
         }
 
-        recalcul();
+        recalcul(recalculResultat);
 
     }
 }
 
-function recalcul() {
+function construitCasesFact(n: string, recalculResultat:boolean): void {
+    const size=n.length;
+    let x=Array(size+1).join('0');
+    let y=Array(Math.floor(size/2)+1).join('0');
+    construitCases(x,y,recalculResultat);
+
+    for(let i=0;i<x.length;i++){
+        let elt=document.getElementById('x'+(i+1));
+        if(elt){
+            (elt as HTMLInputElement).value='';
+        }
+    }
+
+    for(let i=0;i<y.length;i++){
+        let elt=document.getElementById('y'+(i+1));
+        if(elt){
+            (elt as HTMLInputElement).value='';
+        }
+    }
+
+    for(let i=0;i<x.length+y.length+2;i++){
+        let elt=document.getElementById('z'+(i+1));
+        if(elt){
+            const v=n.charCodeAt(size-i-1)-'0'.charCodeAt(0);
+            (elt as HTMLInputElement).value=''+v;
+        }
+    }
+
+    for(let i=0;i<x.length+y.length+2;i++){
+        let elt=document.getElementById('z'+(i+1));
+        if(elt){
+            if(size-i-1>=0) {
+                const v = n.charCodeAt(size - i - 1) - '0'.charCodeAt(0);
+                (elt as HTMLInputElement).value = '' + v;
+            } else {
+                (elt as HTMLInputElement).value = '0';
+            }
+        }
+    }
+    recalcul(recalculResultat);
+}
+
+function recalcul(recalculResultat : boolean) {
     let newEltx = document.getElementById('xValeur');
     let newElty = document.getElementById('yValeur');
     if (newEltx && newElty) {
@@ -208,15 +250,17 @@ function recalcul() {
             }
         }
 
-        // affichage des valeurs résultat
-        const eltResultat = document.getElementById('resultat');
-        if (eltResultat) {
-            for (let i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
-                const name = "z" + (i + 1);
-                const eltRes = document.getElementsByName(name);
-                if (eltRes && eltRes.length > 0) {
-                    const v1 = resultat[i];
-                    (eltRes[0] as HTMLInputElement).value = '' + ((v1 != notUsed) ? v1 : '');
+        if(recalculResultat) {
+            // affichage des valeurs résultat
+            const eltResultat = document.getElementById('resultat');
+            if (eltResultat) {
+                for (let i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
+                    const name = "z" + (i + 1);
+                    const eltRes = document.getElementsByName(name);
+                    if (eltRes && eltRes.length > 0) {
+                        const v1 = resultat[i];
+                        (eltRes[0] as HTMLInputElement).value = '' + ((v1 != notUsed) ? v1 : '');
+                    }
                 }
             }
         }
@@ -230,13 +274,10 @@ function recalcul() {
 // const buttonMulti = document.getElementById('multiOk');
 const buttonMulti = document.getElementById('initMulti');
 buttonMulti?.addEventListener('click', function handleClick(event) {
-    console.log('button Multi clicked');
-    console.log(event);
-    console.log(event.target);
     let res = window.prompt("multiplication (x*y)");
     if (res) {
         res = res.trim();
-        if (res.length > 0 && res.indexOf("*")) {
+        if (res.length > 0 && res.indexOf("*")>0) {
             let tab = res.split("*");
             if (tab && tab.length === 2) {
                 let x = tab[0];
@@ -249,7 +290,8 @@ buttonMulti?.addEventListener('click', function handleClick(event) {
                         y = x;
                         x = tmp;
                     }
-                    construitCases(x, y)
+                    recalculResultat=true;
+                    construitCases(x, y, recalculResultat)
                 }
             }
         }
@@ -262,27 +304,35 @@ buttonMulti?.addEventListener('click', function handleClick(event) {
     // }
 });
 
-const buttonFact = document.getElementById('factOk');
+const buttonFact = document.getElementById('initFact');
 buttonFact?.addEventListener('click', function handleClick(event) {
-    console.log('button Fact clicked');
-    console.log(event);
-    console.log(event.target);
     // const element = document.getElementById('factModalLabel');
     // if(element) {
     //     const modal = new Modal(element);
     //     modal.hide()
     // }
+    let res = window.prompt("factorisation (n=x*y)");
+    if(res) {
+        res = res.trim();
+        if (res.length > 0) {
+            recalculResultat=false;
+            construitCasesFact(res, recalculResultat);
+        }
+    }
 });
 
 
 const buttonRecalcul = document.getElementById('recalcul');
 
 buttonRecalcul?.addEventListener('click', function handleClick(event) {
-    recalcul();
+    recalcul(recalculResultat);
 });
 
-let x = '';
-let y = '';
+let recalculResultat=true;
+
+{
+    let x = '';
+    let y = '';
 
 // x="23";
 // y="5";
@@ -290,9 +340,10 @@ let y = '';
 //x = "100";
 //y = "10";
 
-x = "123";
-y = "45";
+    x = "123";
+    y = "45";
 
-construitCases(x, y);
+    construitCases(x, y, recalculResultat);
 
+}
 
