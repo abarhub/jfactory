@@ -1,3 +1,7 @@
+// import { Modal } from 'bootstrap';
+
+// compile : npx tsc index.ts
+
 function createInput(name: string, placeholder: string, value: string, parent, classe: string): void {
     const tmp2 = document.createElement('input');
     tmp2.setAttribute("type", "text");
@@ -18,6 +22,7 @@ function construitCases(x: string, y: string): void {
     if (elt != null) {
 
         let newEltx = document.getElementById('xValeur');
+        newEltx.textContent = '';
 
         for (let i = tailleX - 1; i >= 0; i--) {
             const tmp = document.createElement('div');
@@ -28,6 +33,7 @@ function construitCases(x: string, y: string): void {
         }
 
         const newElty = document.getElementById('yValeur');
+        newElty.textContent = '';
 
         for (let i = tailleY - 1; i >= 0; i--) {
             const tmp = document.createElement('div');
@@ -40,6 +46,7 @@ function construitCases(x: string, y: string): void {
         // retenues
 
         const eltRetenues = document.getElementById('retenues');
+        eltRetenues.textContent = '';
 
         for (let i = x.length - 1 + y.length - 1; i >= 0; i--) {
             const name = "r" + (i + 1);
@@ -49,6 +56,7 @@ function construitCases(x: string, y: string): void {
         // valeurs intermediaires
 
         const eltValInterm = document.getElementById('valeursIntermediaires');
+        eltValInterm.textContent = '';
 
         for (let j = 0; j < tailleY; j++) {
 
@@ -90,6 +98,7 @@ function construitCases(x: string, y: string): void {
         // résultat
 
         const eltResultat = document.getElementById('resultat');
+        eltResultat.textContent = '';
 
         for (let i = x.length - 1 + y.length - 1; i >= 0; i--) {
             const name = "z" + (i + 1);
@@ -98,6 +107,54 @@ function construitCases(x: string, y: string): void {
 
     }
 }
+
+// const buttonMulti = document.getElementById('multiOk');
+const buttonMulti = document.getElementById('initMulti');
+buttonMulti?.addEventListener('click', function handleClick(event) {
+    console.log('button Multi clicked');
+    console.log(event);
+    console.log(event.target);
+    let res=window.prompt("multiplication (x*y)");
+    if(res){
+        res=res.trim();
+        if(res.length>0&&res.indexOf("*")){
+            let tab=res.split("*");
+            if(tab&&tab.length===2){
+                let x=tab[0];
+                let y=tab[1];
+                x=x.trim();
+                y=y.trim();
+                if(x.length>0&&y.length>0){
+                    if(x.length<y.length){
+                        const tmp=y;
+                        y=x;
+                        x=tmp;
+                    }
+                    construitCases(x,y)
+                }
+            }
+        }
+    }
+    // const element = document.getElementById('dialogMulti') as HTMLElement;
+    // if(element) {
+    //     // (element as any).modal('hide')
+    //     const modal = new Modal(element);
+    //     modal.hide()
+    // }
+});
+
+const buttonFact = document.getElementById('factOk');
+buttonFact?.addEventListener('click', function handleClick(event) {
+    console.log('button Fact clicked');
+    console.log(event);
+    console.log(event.target);
+    // const element = document.getElementById('factModalLabel');
+    // if(element) {
+    //     const modal = new Modal(element);
+    //     modal.hide()
+    // }
+});
+
 
 let x = '';
 let y = '';
