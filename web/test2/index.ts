@@ -2,13 +2,17 @@
 
 // compile : npx tsc index.ts
 
-function createInput(name: string, placeholder: string, value: string, parent, classe: string): void {
+function createInput(name: string, placeholder: string, value: string, parent, classe: string, title: string): void {
     const tmp2 = document.createElement('input');
     tmp2.setAttribute("type", "text");
     tmp2.setAttribute("name", name);
     tmp2.setAttribute("placeholder", placeholder);
     tmp2.setAttribute("value", value);
     tmp2.setAttribute("class", "case " + classe);
+    tmp2.setAttribute("id", name);
+    if (title) {
+        tmp2.setAttribute("title", title);
+    }
     parent.appendChild(tmp2);
 }
 
@@ -29,7 +33,7 @@ function construitCases(x: string, y: string): void {
             newEltx.appendChild(tmp);
 
             const name = "x" + (i + 1);
-            createInput(name, name, "" + x[tailleX - 1 - i], tmp, 'case-x');
+            createInput(name, name, "" + x[tailleX - 1 - i], tmp, 'case-x', name);
         }
 
         const newElty = document.getElementById('yValeur');
@@ -40,7 +44,7 @@ function construitCases(x: string, y: string): void {
             newElty.appendChild(tmp);
 
             const name = "y" + (i + 1);
-            createInput(name, name, "" + y[tailleY - 1 - i], tmp, 'case-y');
+            createInput(name, name, "" + y[tailleY - 1 - i], tmp, 'case-y', name);
         }
 
         // retenues
@@ -50,7 +54,7 @@ function construitCases(x: string, y: string): void {
 
         for (let i = x.length - 1 + y.length - 1; i >= 0; i--) {
             const name = "r" + (i + 1);
-            createInput(name, name, "0", eltRetenues, 'case-retenues');
+            createInput(name, name, "0", eltRetenues, 'case-retenues', name);
         }
 
         // valeurs intermediaires
@@ -67,20 +71,9 @@ function construitCases(x: string, y: string): void {
             for (let i = tailleX - 1; i >= 0; i--) {
 
                 const name = "x" + (i + 1) + "*y" + (j + 1);
-                const nx = parseInt(x[tailleX - i - 1]);
-                const ny = parseInt(y[tailleY - j - 1]);
-                const v = nx * ny;
-                const v1 = v % 10;
-                const v2 = (v - v1) / 10;
-                createInput(name, name, "", tmp, 'case-intermediaire');
-                if (v2 > 0) {
-                    const eltRet = document.getElementsByName('r' + (i + j + 2));
-                    if (eltRet.length > 0) {
-                        const v3 = (eltRet[0] as HTMLInputElement).value;
-                        let n = parseInt(v3);
-                        n += v2;
-                    }
-                }
+
+                createInput(name, name, "", tmp, 'case-intermediaire', name);
+
             }
 
             for (let k = 0; k < j; k++) {
@@ -101,7 +94,7 @@ function construitCases(x: string, y: string): void {
 
         for (let i = x.length - 1 + y.length - 1; i >= 0; i--) {
             const name = "z" + (i + 1);
-            createInput(name, name, "", eltResultat, 'case-resultat');
+            createInput(name, name, "", eltResultat, 'case-resultat', name);
         }
 
         recalcul();
@@ -116,10 +109,10 @@ function recalcul() {
         const tailleX = newEltx.childNodes.length;
         const tailleY = newElty.childNodes.length;
 
-        const tab: number[] = [];
         const valeursIntermedaire: number[][] = [];
         const reste: number[] = [];
         const resultat: number[] = [];
+        const notUsed = -1;
 
         for (let j = 0; j < tailleY; j++) {
 
@@ -134,61 +127,75 @@ function recalcul() {
                 if (eltx && eltx.length > 0 && elty && elty.length > 0) {
                     const valx = (eltx[0] as HTMLInputElement).value;
                     const valy = (elty[0] as HTMLInputElement).value;
+                    const eltInterm = document.getElementsByName(name);
+                    const colonne = i + j;
+                    const ligne = j;
+                    while (valeursIntermedaire.length <= colonne) {
+                        valeursIntermedaire.push([]);
+                    }
+                    const colonneTab = valeursIntermedaire[colonne];
+                    while (colonneTab.length <= ligne) {
+                        colonneTab.push(0);
+                    }
+                    while (reste.length <= colonne + 1) {
+                        reste.push(0);
+                    }
+
                     if (valx && valx.length > 0 && valy && valy.length > 0) {
+
                         const nx = parseInt(valx);
                         const ny = parseInt(valy);
-                        const v = nx * ny;
-                        const v1 = v % 10;
-                        const v2 = (v - v1) / 10;
-                        const eltInterm = document.getElementsByName(name);
-                        const colonne = i + j;
-                        const ligne = j;
-                        if (eltInterm && eltInterm.length > 0) {
-                            eltInterm[0].setAttribute('value', '' + v1);
-                        }
-                        while (valeursIntermedaire.length <= colonne) {
-                            valeursIntermedaire.push([]);
-                        }
-                        const colonneTab = valeursIntermedaire[colonne];
-                        while (colonneTab.length <= ligne) {
-                            colonneTab.push(0);
-                        }
+                        const v=nx * ny;
                         colonneTab[ligne] = v;
-                        while (reste.length <= colonne + 1) {
-                            reste.push(0);
+
+                        if (eltInterm && eltInterm.length > 0) {
+                            (eltInterm[0] as HTMLInputElement).value= ''+(v%10);
                         }
 
-                        const pos = i + j;
-                        while (pos >= tab.length) {
-                            tab.push(0);
-                        }
-                        tab[pos] = tab[pos] + v1;
+                    } else {
+                        colonneTab[ligne] = notUsed;
 
+                        if (eltInterm && eltInterm.length > 0) {
+                            (eltInterm[0] as HTMLInputElement).value= '';
+                        }
                     }
 
                 }
             }
         }
 
+        // calcul des valeurs de retenues et de resultats
         for (let i = 0; i < valeursIntermedaire.length; i++) {
             let val = 0;
+            let fin = false;
             for (let j = 0; j < valeursIntermedaire[i].length; j++) {
+                if (valeursIntermedaire[i][j] == notUsed) {
+                    fin = true;
+                    break;
+                }
                 val += valeursIntermedaire[i][j];
             }
             while (reste.length <= i + 1) {
-                reste.push(0);
+                reste.push(notUsed);
 
             }
-            val += reste[i];
-            while (i >= resultat.length) {
-                resultat.push(0);
+            if (reste[i] >= 0) {
+                val += reste[i];
+                while (i >= resultat.length) {
+                    resultat.push(notUsed);
+                }
             }
-            let v1 = val % 10;
-            let v2 = Math.floor(val / 10);
-            resultat[i] = v1;
-            reste[i + 1] = v2;
+            if (!fin) {
+                let v1 = val % 10;
+                let v2 = Math.floor(val / 10);
+                resultat[i] = v1;
+                reste[i + 1] = v2;
+            } else {
+                resultat[i] = notUsed;
+            }
         }
 
+        // affichage des valeurs de retenues
         const eltReste = document.getElementById('retenues');
         if (eltReste) {
             for (let i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
@@ -196,11 +203,12 @@ function recalcul() {
                 const eltRes = document.getElementsByName(name);
                 if (eltRes && eltRes.length > 0) {
                     const v1 = reste[i];
-                    (eltRes[0] as HTMLInputElement).value = '' + v1;
+                    (eltRes[0] as HTMLInputElement).value = '' + ((v1 != notUsed) ? v1 : "");
                 }
             }
         }
 
+        // affichage des valeurs résultat
         const eltResultat = document.getElementById('resultat');
         if (eltResultat) {
             for (let i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
@@ -208,7 +216,7 @@ function recalcul() {
                 const eltRes = document.getElementsByName(name);
                 if (eltRes && eltRes.length > 0) {
                     const v1 = resultat[i];
-                    (eltRes[0] as HTMLInputElement).value = '' + v1;
+                    (eltRes[0] as HTMLInputElement).value = '' + ((v1 != notUsed) ? v1 : '');
                 }
             }
         }

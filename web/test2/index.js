@@ -1,12 +1,16 @@
 // import { Modal } from 'bootstrap';
 // compile : npx tsc index.ts
-function createInput(name, placeholder, value, parent, classe) {
+function createInput(name, placeholder, value, parent, classe, title) {
     var tmp2 = document.createElement('input');
     tmp2.setAttribute("type", "text");
     tmp2.setAttribute("name", name);
     tmp2.setAttribute("placeholder", placeholder);
     tmp2.setAttribute("value", value);
     tmp2.setAttribute("class", "case " + classe);
+    tmp2.setAttribute("id", name);
+    if (title) {
+        tmp2.setAttribute("title", title);
+    }
     parent.appendChild(tmp2);
 }
 function construitCases(x, y) {
@@ -20,7 +24,7 @@ function construitCases(x, y) {
             var tmp = document.createElement('div');
             newEltx.appendChild(tmp);
             var name_1 = "x" + (i + 1);
-            createInput(name_1, name_1, "" + x[tailleX - 1 - i], tmp, 'case-x');
+            createInput(name_1, name_1, "" + x[tailleX - 1 - i], tmp, 'case-x', name_1);
         }
         var newElty = document.getElementById('yValeur');
         newElty.textContent = '';
@@ -28,14 +32,14 @@ function construitCases(x, y) {
             var tmp = document.createElement('div');
             newElty.appendChild(tmp);
             var name_2 = "y" + (i + 1);
-            createInput(name_2, name_2, "" + y[tailleY - 1 - i], tmp, 'case-y');
+            createInput(name_2, name_2, "" + y[tailleY - 1 - i], tmp, 'case-y', name_2);
         }
         // retenues
         var eltRetenues = document.getElementById('retenues');
         eltRetenues.textContent = '';
         for (var i = x.length - 1 + y.length - 1; i >= 0; i--) {
             var name_3 = "r" + (i + 1);
-            createInput(name_3, name_3, "0", eltRetenues, 'case-retenues');
+            createInput(name_3, name_3, "0", eltRetenues, 'case-retenues', name_3);
         }
         // valeurs intermediaires
         var eltValInterm = document.getElementById('valeursIntermediaires');
@@ -46,22 +50,7 @@ function construitCases(x, y) {
             eltValInterm.appendChild(tmp);
             for (var i = tailleX - 1; i >= 0; i--) {
                 var name_4 = "x" + (i + 1) + "*y" + (j + 1);
-                var nx = parseInt(x[tailleX - i - 1]);
-                var ny = parseInt(y[tailleY - j - 1]);
-                var v = nx * ny;
-                var v1 = v % 10;
-                var v2 = (v - v1) / 10;
-                // createInput(name, name, "" + v1, tmp, 'case-intermediaire');
-                createInput(name_4, name_4, "", tmp, 'case-intermediaire');
-                if (v2 > 0) {
-                    var eltRet = document.getElementsByName('r' + (i + j + 2));
-                    if (eltRet.length > 0) {
-                        var v3 = eltRet[0].value;
-                        var n = parseInt(v3);
-                        n += v2;
-                        // (eltRet[0] as HTMLInputElement).value= '' + n;
-                    }
-                }
+                createInput(name_4, name_4, "", tmp, 'case-intermediaire', name_4);
             }
             for (var k = 0; k < j; k++) {
                 var tmp2 = document.createElement('div');
@@ -76,7 +65,7 @@ function construitCases(x, y) {
         eltResultat.textContent = '';
         for (var i = x.length - 1 + y.length - 1; i >= 0; i--) {
             var name_5 = "z" + (i + 1);
-            createInput(name_5, name_5, "", eltResultat, 'case-resultat');
+            createInput(name_5, name_5, "", eltResultat, 'case-resultat', name_5);
         }
         recalcul();
     }
@@ -87,10 +76,11 @@ function recalcul() {
     if (newEltx && newElty) {
         var tailleX = newEltx.childNodes.length;
         var tailleY = newElty.childNodes.length;
-        var tab = [];
+        // const tab: number[] = [];
         var valeursIntermedaire = [];
         var reste = [];
         var resultat = [];
+        var notUsed = -1;
         for (var j = 0; j < tailleY; j++) {
             for (var i = tailleX - 1; i >= 0; i--) {
                 var name_6 = "x" + (i + 1) + "*y" + (j + 1);
@@ -99,55 +89,77 @@ function recalcul() {
                 if (eltx && eltx.length > 0 && elty && elty.length > 0) {
                     var valx = eltx[0].value;
                     var valy = elty[0].value;
+                    // if (valx && valx.length > 0 && valy && valy.length > 0) {
+                    // const nx = parseInt(valx);
+                    // const ny = parseInt(valy);
+                    // const v = nx * ny;
+                    // const v1 = v % 10;
+                    // const v2 = (v - v1) / 10;
+                    var eltInterm = document.getElementsByName(name_6);
+                    var colonne = i + j;
+                    var ligne = j;
+                    // if (eltInterm && eltInterm.length > 0) {
+                    //     eltInterm[0].setAttribute('value', '' + v1);
+                    // }
+                    while (valeursIntermedaire.length <= colonne) {
+                        valeursIntermedaire.push([]);
+                    }
+                    var colonneTab = valeursIntermedaire[colonne];
+                    while (colonneTab.length <= ligne) {
+                        colonneTab.push(0);
+                    }
+                    while (reste.length <= colonne + 1) {
+                        reste.push(0);
+                    }
                     if (valx && valx.length > 0 && valy && valy.length > 0) {
                         var nx = parseInt(valx);
                         var ny = parseInt(valy);
                         var v = nx * ny;
-                        var v1 = v % 10;
-                        var v2 = (v - v1) / 10;
-                        var eltInterm = document.getElementsByName(name_6);
-                        var colonne = i + j;
-                        var ligne = j;
-                        if (eltInterm && eltInterm.length > 0) {
-                            eltInterm[0].setAttribute('value', '' + v1);
-                        }
-                        while (valeursIntermedaire.length <= colonne) {
-                            valeursIntermedaire.push([]);
-                        }
-                        var colonneTab = valeursIntermedaire[colonne];
-                        while (colonneTab.length <= ligne) {
-                            colonneTab.push(0);
-                        }
                         colonneTab[ligne] = v;
-                        while (reste.length <= colonne + 1) {
-                            reste.push(0);
+                        if (eltInterm && eltInterm.length > 0) {
+                            eltInterm[0].value = '' + (v % 10);
                         }
-                        var pos = i + j;
-                        while (pos >= tab.length) {
-                            tab.push(0);
+                    }
+                    else {
+                        colonneTab[ligne] = notUsed;
+                        if (eltInterm && eltInterm.length > 0) {
+                            eltInterm[0].value = '';
                         }
-                        tab[pos] = tab[pos] + v1;
                     }
                 }
             }
         }
+        // calcul des valeurs de retenues et de resultats
         for (var i = 0; i < valeursIntermedaire.length; i++) {
             var val = 0;
+            var fin = false;
             for (var j = 0; j < valeursIntermedaire[i].length; j++) {
+                if (valeursIntermedaire[i][j] == notUsed) {
+                    fin = true;
+                    break;
+                }
                 val += valeursIntermedaire[i][j];
             }
             while (reste.length <= i + 1) {
-                reste.push(0);
+                reste.push(notUsed);
             }
-            val += reste[i];
-            while (i >= resultat.length) {
-                resultat.push(0);
+            if (reste[i] >= 0) {
+                val += reste[i];
+                while (i >= resultat.length) {
+                    resultat.push(notUsed);
+                }
             }
-            var v1 = val % 10;
-            var v2 = Math.floor(val / 10);
-            resultat[i] = v1;
-            reste[i + 1] = v2;
+            if (!fin) {
+                var v1 = val % 10;
+                var v2 = Math.floor(val / 10);
+                resultat[i] = v1;
+                reste[i + 1] = v2;
+            }
+            else {
+                resultat[i] = notUsed;
+            }
         }
+        // affichage des valeurs de retenues
         var eltReste = document.getElementById('retenues');
         if (eltReste) {
             for (var i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
@@ -155,10 +167,11 @@ function recalcul() {
                 var eltRes = document.getElementsByName(name_7);
                 if (eltRes && eltRes.length > 0) {
                     var v1 = reste[i];
-                    eltRes[0].value = '' + v1;
+                    eltRes[0].value = '' + ((v1 != notUsed) ? v1 : "");
                 }
             }
         }
+        // affichage des valeurs résultat
         var eltResultat = document.getElementById('resultat');
         if (eltResultat) {
             for (var i = tailleX - 1 + tailleY - 1; i >= 0; i--) {
@@ -166,7 +179,7 @@ function recalcul() {
                 var eltRes = document.getElementsByName(name_8);
                 if (eltRes && eltRes.length > 0) {
                     var v1 = resultat[i];
-                    eltRes[0].value = '' + v1;
+                    eltRes[0].value = '' + ((v1 != notUsed) ? v1 : '');
                 }
             }
         }
